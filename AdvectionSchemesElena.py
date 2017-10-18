@@ -117,7 +117,7 @@ def main():
     plt.show()
     
 
-     # Call 
+    # Call  CTBS 
     
     for t in [3,5,10,15,20,25,30]:
         f_CTBS = CTBS ( f_0, c ,t )
