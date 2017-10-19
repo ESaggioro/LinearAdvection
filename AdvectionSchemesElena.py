@@ -12,7 +12,7 @@ Created on Wed Oct 18 15:09:03 2017
 
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy import where, cos, pi
+from numpy import where, cos, pi , sin
 
 
 def main():
@@ -116,20 +116,35 @@ def main():
     plt.ylim([-0.2,1.2])
     plt.show()
     
+    # FOR CTBS CONDITIONS HAS TO BE SMOOTH ??
+    
+    u_0 = sin ( 2 * pi * x)
+    # Plot initial conditions
+    plt.clf()
+    plt.ion()
+    plt.plot(x, u_0, label="Initial conditions")
+    plt.legend(loc="best")
+    plt.title("CTBS scheme")
+    plt.axhline(0, linestyle=':',color='black')
+    plt.ylim([-1.0,1.0])
+    plt.show()
 
     # Call  CTBS 
     
-    for t in [3,5,10,15,20,25,30]:
-        f_CTBS = CTBS ( f_0, c ,t )
+    for t in [3,5,10,15,20,25,30, 50]:
+        u_CTBS = CTBS ( u_0, c ,t )
         # Plot result
         plt.clf()
         plt.ion()
-        plt.plot(x, f_CTBS, label="Profile at time t = %g" %t , color = 'orange')
+        plt.plot(x, u_CTBS, label="Profile at time t = %g" %t , color = 'orange')
         plt.legend(loc="best")
         plt.title("CTBS scheme for Linear Advection, Courant c = %g" %c)
         plt.axhline(0, linestyle=':',color='black')
-        plt.ylim([-0.2,1.2])
+        plt.ylim([-1.0,1.0])
         plt.show()
+        
+        
+    # NOW ADD PLOT OF EXACT SOLUTION and 2 schemes together
 
 
 main()
