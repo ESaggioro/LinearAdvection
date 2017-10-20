@@ -81,7 +81,76 @@ def main():
             
         return(phi)
     
-    
+        # CTCS scheme with periodic boundaries 
+    def CTCS ( phi0, c , nt): 
+        
+        if (phi0[0] != phi0[-1]):
+            print('Careful: your c.i. PhiO does not have periodic boundaries')
+            
+        nx = len(phi0) 
+        # Create the function phi(t) and initialize to 0
+        phi = np.zeros(nx,dtype=float) 
+        # Create phiOld and initialize it to phi0
+        phiOld2 = phi0.copy()
+        
+        # For CTCS you need also to initialize phi1 
+        # Create phiOld1 and initialize it to phi1=f (phi0) 
+        # via FTCS
+        phiOld1 = np.zeros(nx,dtype=float)
+        for ix in range(1, nx-1):
+            phiOld1[ix] = phiOld2[ix] - 0.5 * c * (phiOld2[ix+1] - phiOld2[ix-1])
+        # Update values at end points ([0] and [nx-1])
+        phiOld1[0] = phiOld2[0] -  0.5 * c * (phiOld2[1] - phiOld2[nx-2])
+        phiOld1[nx-1] = phiOld1[0]
+        
+        # Loop over time steps t = 2,..(nt-1)  (total of nt-2 elements)
+        for it in range(2,nt):  
+            # Loop CTCS over space (excluding end points)
+            for ix in range(1,nx-1):
+                phi[ix] = phiOld2[ix] - c * ( phiOld1[ix+1] - phiOld1[ix-1] )
+            # Update values at end points
+            phi[0] = phiOld2[0] -  c * (phiOld1[1] - phiOld1[nx-2])
+            phi[nx-1] = phi[0]
+            # Update old time value 
+            phiOld2 = phiOld1.copy()
+            phiOld1 = phi.copy()
+            
+            
+        return(phi)
+        
+    def Analytical_Periodic ( phi_0 , c, t, Lx , plotting=0 ):
+        # Input Lx = Length of x 
+        
+        # Calculate u wave velocity
+        nx = len(phi_0)
+        dx = Lx / nx
+        dt = 1
+        u = c * dx / dt
+        
+        # how many Lx has the wave passed
+        alpha = int( u*t/Lx ) 
+        
+        # where is the first point after t time steps
+        x_b = u*t - alpha*Lx
+        x_b_index = int(x_b * nx / Lx)
+        
+        # Update phi by slicing and glueing correctly
+        phi_t_1st = list(phi_0[-x_b_index:])
+        phi_t_2nd= list(phi_0[:nx-x_b_index])
+        
+        phi_t =  phi_t_1st + phi_t_2nd
+        
+        if plotting != 0:
+            plt.clf()
+            plt.ion()
+            plt.plot( x, phi_t , label = "Evolved function at time t=%g" %t)
+            plt.plot( x, phi_0 , label = "Initial conditions" )
+            plt.legend(loc="best")
+            plt.title ("Linear advection with c=%g " %c)
+            plt.show()
+        
+       
+        return(phi_t)
     
     
     # Set the space grid
@@ -103,6 +172,10 @@ def main():
     Nt = 50
     c = 0.3
     
+    # Call Analytical solution with periodic boundaries
+    
+    f_Analytical = Analytical_Periodic ( f_0 , c, Nt, Length , 1 )
+    
     # Call FTCS
     
     f_FTCS = FTCS ( f_0, c , Nt)
@@ -110,6 +183,7 @@ def main():
     plt.clf()
     plt.ion()
     plt.plot(x, f_FTCS, label="Profile at time t = %g" %Nt )
+    plt.plot( x , f_Analytical, 'b-',label = "Analytical" )
     plt.legend(loc="best")
     plt.title("FTCS scheme for Linear Advection, Courant c = %g" %c)
     plt.axhline(0, linestyle=':',color='black')
@@ -119,6 +193,8 @@ def main():
     # FOR CTBS CONDITIONS HAS TO BE SMOOTH ??
     
     u_0 = sin ( 2 * pi * x)
+    
+    u_Analytical = Analytical_Periodic ( u_0 , c, Nt, Length , 1 )
     # Plot initial conditions
     plt.clf()
     plt.ion()
@@ -129,19 +205,20 @@ def main():
     plt.ylim([-1.0,1.0])
     plt.show()
 
+    
     # Call  CTBS 
     
-    for t in [3,5,10,15,20,25,30, 50]:
-        u_CTBS = CTBS ( u_0, c ,t )
-        # Plot result
-        plt.clf()
-        plt.ion()
-        plt.plot(x, u_CTBS, label="Profile at time t = %g" %t , color = 'orange')
-        plt.legend(loc="best")
-        plt.title("CTBS scheme for Linear Advection, Courant c = %g" %c)
-        plt.axhline(0, linestyle=':',color='black')
-        plt.ylim([-1.0,1.0])
-        plt.show()
+    u_CTBS = CTBS ( u_0, c ,Nt )
+    # Plot result
+    plt.clf()
+    plt.ion()
+    plt.plot(x, u_CTBS, label="Profile at time t = %g" %Nt , color = 'orange')
+    plt.plot( x , u_Analytical, 'b-',label = "Analytical" )
+    plt.legend(loc="best")
+    plt.title("CTBS scheme for Linear Advection, Courant c = %g" %c)
+    plt.axhline(0, linestyle=':',color='black')
+    plt.ylim([-1.0,1.0])
+    plt.show()
         
         
     # NOW ADD PLOT OF EXACT SOLUTION and 2 schemes together
