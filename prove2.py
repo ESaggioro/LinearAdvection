@@ -25,8 +25,13 @@ def main():
     Length=1.0
     x = np.linspace(0,Length,Nx)     # Points in the x direction
        
-    # Initial conditions for dependent variable phi 
+    # Initial conditions for dependent variable  
     f_0 = where(x<0.5, 0.5*(1-cos(4*pi*x)),0 )
+    
+    u_0 = where (x<0.25, 1,0 ) - where (x<0.75, 1,0 )
+    
+    q_0 = np.sin(4*pi*x)
+    #q_0[-1]=0
     
     # Function evolved ad time t 
     
@@ -49,15 +54,16 @@ def main():
         x_b = u*t - alpha*Lx
         print("x_b=ut-alpha*L=%g \n" %x_b)
         
-        x_b_index = int(x_b * nx / Lx)
+        x_b_index = int(x_b * nx / Lx) 
         print("x_b index=%g" % x_b_index  )
+        last = phi_0[-x_b_index]
         phi_t_1st = list(phi_0[-x_b_index:])
-        phi_t_2nd= list(phi_0[:nx-x_b_index])
+        phi_t_2nd= list(phi_0[1:nx-x_b_index])
         
         print(len(phi_t_1st))
         print(len(phi_t_2nd))
         
-        phi_t =  phi_t_1st + phi_t_2nd
+        phi_t =  phi_t_1st + phi_t_2nd + [last]
         print (len(phi_0), len(phi_t))
         
         plt.clf()
@@ -73,10 +79,22 @@ def main():
         return(phi_t)
         
     
-    f_10 = Analytical_Periodic_piecewise0 ( f_0 , 0.3 , 10 , Length)
-    f_50 = Analytical_Periodic_piecewise0 ( f_0 , 0.3 , 50 , Length)
-    f_100 = Analytical_Periodic_piecewise0 ( f_0 , 0.3 , 100 , Length)
-    f_200 = Analytical_Periodic_piecewise0 ( f_0 , 0.3 , 200 , Length)
+    ##f_10 = Analytical_Periodic_piecewise0 ( f_0 , 0.3 , 10 , Length)
+    ##f_50 = Analytical_Periodic_piecewise0 ( f_0 , 0.3 , 50 , Length)
+    ##f_100 = Analytical_Periodic_piecewise0 ( f_0 , 0.3 , 100 , Length)
+    ##f_200 = Analytical_Periodic_piecewise0 ( f_0 , 0.3 , 200 , Length)
+    
+    
+    ##u_10 = Analytical_Periodic_piecewise0 ( u_0 , 0.3 , 10 , Length)
+    ##u_50 = Analytical_Periodic_piecewise0 ( u_0 , 0.3 , 50 , Length)
+    ##u_100 = Analytical_Periodic_piecewise0 ( u_0 , 0.3 , 100 , Length)
+    ##u_200 = Analytical_Periodic_piecewise0 ( u_0 , 0.3 , 200 , Length)
+    
+    Analytical_Periodic_piecewise0 ( q_0 , 0.3 , 10 , Length)
+    Analytical_Periodic_piecewise0 ( q_0 , 0.3 , 50 , Length)
+    Analytical_Periodic_piecewise0 ( q_0 , 0.3 , 100 , Length)
+    Analytical_Periodic_piecewise0 ( q_0 , 0.3 , 200 , Length)
+    
     
     # See how the first point of the wave goes in time
     # it is trapped between 0 and 1

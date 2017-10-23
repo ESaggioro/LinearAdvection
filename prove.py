@@ -51,9 +51,12 @@ def main():
             phiOld1 = phi.copy()
             
             if it in output_times:
+                
+                phi_An=Analytical_Periodic(phi0,c, it, 1  )
                 plt.clf()
                 plt.ion()
-                plt.plot(x, phi, label="Profile at time t = %g" %it)
+                plt.plot(x, phi, label="CTBS at time t = %g" %it)
+                plt.plot(x, phi_An, label="Analytical at time t = %g" %it)
                 plt.title("CTBS scheme for Linear Advection, Courant c = %g" %c)
                 plt.legend(loc="best")
                 plt.axhline(0, linestyle=':',color='black')
@@ -63,6 +66,44 @@ def main():
             
             
         return(phi)
+        
+    def Analytical_Periodic ( phi_0 , c, t, Lx , plotting=0 ):
+        # Input Lx = Length of x 
+        
+        if (phi_0[0] != phi_0[-1]):
+            print('Careful: your c.i. PhiO does not have periodic boundaries')
+        
+        # Calculate u wave velocity
+        nx = len(phi_0)
+        dx = Lx / nx
+        dt = 1
+        u = c * dx / dt
+        
+        # how many Lx has the wave passed
+        alpha = int( u*t/Lx ) 
+        
+        # where is the first point after t time steps
+        x_b = u*t - alpha*Lx
+        x_b_index = int(x_b * nx / Lx)
+        
+        # Update phi by slicing and glueing correctly
+        last = phi_0[-x_b_index]
+        phi_t_1st = list(phi_0[-x_b_index:])
+        phi_t_2nd= list(phi_0[1:nx-x_b_index])
+        
+        phi_t =  phi_t_1st + phi_t_2nd + [last]
+        
+        if plotting != 0:
+            plt.clf()
+            plt.ion()
+            plt.plot( x, phi_t , label = "Analytical function at time t=%g" %t)
+            plt.plot( x, phi_0 , label = "Initial conditions" )
+            plt.legend(loc="best")
+            plt.title ("Linear advection with c=%g " %c)
+            plt.show()
+        
+       
+        return(phi_t)
     
     
     
@@ -71,11 +112,27 @@ def main():
     Nx = 100                    # Number of points from x=0 to x=1 inclusive
     Length=1
     x = np.linspace(0,Length,Nx)     # Points in the x direction
-    
-    # Initial conditions for dependent variable phi 
-    #u_0 = np.heaviside(x-0.25*Length,0) - np.heaviside(x-0.75*Length,0)
+
+    # Initial conditions for dependent variable u 
     
     u_0 = sin ( 2 * pi * x)
+    
+    print ("Are boundaries periodic? : u_0[0]= ",u_0[0]," u_0[-1]= ",u_0[-1])
+    if u_0[0] != u_0[-1]:
+        print("No!")
+    else:
+        print("Yes!")
+    
+    # Set value at x= 2*pi to 0 , to overcome the finite precision of np.pi 
+    for i,ui in enumerate(u_0):
+        if (-1*10**(-15) < ui < 1*10**(-15)):
+            u_0[i]=0
+            
+    print ("Are boundaries periodic now? : u_0[0]= ",u_0[0]," u_0[-1]= ",u_0[-1])
+    if u_0[0] != u_0[-1]:
+        print("No!")
+    else:
+        print("Yes!")
     # Plot initial conditions
     plt.clf()
     plt.ion()
@@ -89,13 +146,15 @@ def main():
     
     # Call  CTBS 
     
-    input('Press return to start simulation')
+    #input('Press return to start simulation')
     
-    Nt = 50
-    t_output = [3,5,10,15,20,15,30,40,50]
+    Nt = 60
+    t_output = [50]
     c = 0.3
     
     u_Nt = CTBS ( u_0, c , Nt, t_output ) 
+    
+    
     
     
     
