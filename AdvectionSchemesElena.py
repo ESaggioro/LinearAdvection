@@ -21,7 +21,7 @@ def main():
     # FTCS scheme with periodic boundaries 
     def FTCS ( phi0, c , nt): 
         
-        if (phi0[0] != phi0[-1]):
+        if np.abs(phi0[0] -phi0[-1])> 10**(-10):
             print('Careful: your c.i. PhiO does not have periodic boundaries')
             
         nx = len(phi0) 
@@ -48,7 +48,7 @@ def main():
     # CTBS scheme with periodic boundaries 
     def CTBS ( phi0, c , nt): 
         
-        if (phi0[0] != phi0[-1]):
+        if np.abs(phi0[0] -phi0[-1])> 10**(-10):
             print('Careful: your c.i. PhiO does not have periodic boundaries')
             
         nx = len(phi0) 
@@ -84,7 +84,7 @@ def main():
         # CTCS scheme with periodic boundaries 
     def CTCS ( phi0, c , nt): 
         
-        if (phi0[0] != phi0[-1]):
+        if np.abs(phi0[0] -phi0[-1])> 10**(-10):
             print('Careful: your c.i. PhiO does not have periodic boundaries')
             
         nx = len(phi0) 
@@ -121,6 +121,9 @@ def main():
     def Analytical_Periodic ( phi_0 , c, t, Lx , plotting=0 ):
         # Input Lx = Length of x 
         
+        if np.abs(phi_0[0] -phi_0[-1])> 10**(-10):
+            print('Careful: your c.i. PhiO does not have periodic boundaries')
+        
         # Calculate u wave velocity
         nx = len(phi_0)
         dx = Lx / nx
@@ -135,16 +138,18 @@ def main():
         x_b_index = int(x_b * nx / Lx)
         
         # Update phi by slicing and glueing correctly
+        last = phi_0[-x_b_index]
         phi_t_1st = list(phi_0[-x_b_index:])
-        phi_t_2nd= list(phi_0[:nx-x_b_index])
+        phi_t_2nd= list(phi_0[1:nx-x_b_index])
         
-        phi_t =  phi_t_1st + phi_t_2nd
+        phi_t =  phi_t_1st + phi_t_2nd + [last]
+        
         
         if plotting != 0:
             plt.clf()
             plt.ion()
-            plt.plot( x, phi_t , label = "Evolved function at time t=%g" %t)
-            plt.plot( x, phi_0 , label = "Initial conditions" )
+            plt.plot( x, phi_t , 'b-', label = "Analytical function at time t=%g" %t)
+            plt.plot( x, phi_0 , color='black',label = "Initial conditions" )
             plt.legend(loc="best")
             plt.title ("Linear advection with c=%g " %c)
             plt.show()
@@ -163,18 +168,18 @@ def main():
     # Plot initial conditions
     plt.clf()
     plt.ion()
-    plt.plot(x, f_0, label="Initial conditions")
+    plt.plot(x, f_0, color='black', label="Initial conditions")
     plt.legend(loc="best")
     plt.axhline(0, linestyle=':',color='black')
     plt.ylim([-0.2,1.2])
     plt.show()
     
-    Nt = 50
+    Nt = 60
     c = 0.3
     
     # Call Analytical solution with periodic boundaries
     
-    f_Analytical = Analytical_Periodic ( f_0 , c, Nt, Length , 1 )
+    f_Analytical = Analytical_Periodic ( f_0 , c, Nt, Length , 0 )
     
     # Call FTCS
     
@@ -182,7 +187,7 @@ def main():
     # Plot result
     plt.clf()
     plt.ion()
-    plt.plot(x, f_FTCS, label="Profile at time t = %g" %Nt )
+    plt.plot(x, f_FTCS, color='orange',label="Profile at time t = %g" %Nt )
     plt.plot( x , f_Analytical, 'b-',label = "Analytical" )
     plt.legend(loc="best")
     plt.title("FTCS scheme for Linear Advection, Courant c = %g" %c)
@@ -194,17 +199,17 @@ def main():
     
     u_0 = sin ( 2 * pi * x)
     
-    u_Analytical = Analytical_Periodic ( u_0 , c, Nt, Length , 1 )
     # Plot initial conditions
     plt.clf()
     plt.ion()
-    plt.plot(x, u_0, label="Initial conditions")
+    plt.plot(x, u_0, color='black' , label="Initial conditions")
     plt.legend(loc="best")
-    plt.title("CTBS scheme")
     plt.axhline(0, linestyle=':',color='black')
     plt.ylim([-1.0,1.0])
     plt.show()
-
+    
+    
+    u_Analytical = Analytical_Periodic ( u_0 , c, Nt, Length , 0 )
     
     # Call  CTBS 
     
@@ -212,7 +217,7 @@ def main():
     # Plot result
     plt.clf()
     plt.ion()
-    plt.plot(x, u_CTBS, label="Profile at time t = %g" %Nt , color = 'orange')
+    plt.plot(x, u_CTBS, color='orange',label="Profile at time t = %g" %Nt )
     plt.plot( x , u_Analytical, 'b-',label = "Analytical" )
     plt.legend(loc="best")
     plt.title("CTBS scheme for Linear Advection, Courant c = %g" %c)
