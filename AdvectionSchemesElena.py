@@ -225,6 +225,19 @@ def main():
     plt.ylim([-1.0,1.0])
     plt.show()
         
+    
+    f_CTBS = CTBS ( f_0, c ,Nt ) 
+    # Plot result
+    plt.clf()
+    plt.ion()
+    plt.plot(x, f_CTBS, color='orange',label="Profile at time t = %g" %Nt )
+    plt.plot( x , f_Analytical, 'b-',label = "Analytical" )
+    plt.legend(loc="best")
+    plt.title("CTBS scheme for Linear Advection, Courant c = %g" %c)
+    plt.axhline(0, linestyle=':',color='black')
+    plt.ylim([-0.2,1.2])
+    plt.show()
+    
         
     # NOW ADD PLOT OF EXACT SOLUTION and 2 schemes together
 
