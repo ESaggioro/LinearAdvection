@@ -1,0 +1,7 @@
+This subfolder contains the code for the deadline of the Numerics course of 25th of October .
+
+In file main.py there is the main code for the Linear Advection equation problem. It calls three numerical methods 
+for two different initial conditions and plots the results.
+
+The files FTCSAlone.py, CTCSAlone.py and CTBSAlone.py are the codes for the relative nomerical schemes.
+The file L_norm_errors.py is the code for computing the l_1, l_2 and l_infty error norms.
