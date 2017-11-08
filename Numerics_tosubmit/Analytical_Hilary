@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov  8 16:41:17 2017
+
+@author: es3017
+"""
+
+## This function computes the analytical solution for the linear advection eq,
+## given an initial condition. 
+
+import numpy as np
+import matplotlib.pyplot as plt
+from numpy import where, cos, pi , sin
+
+
+SMALL = 1e-10
+
+def Analytical_Periodic ( initialconditiontype??? , phi_0 , c, Nt , T , Lx ):
+    " Analytical solution to linear advection in 1d "
+    # Input are :
+    # phi_0 the initial profile, c= the courant number, 
+    # Nt = number of time step , T = physical total time , 
+    # Lx = physical length of x 
+        
+    if np.abs(phi_0[0] - phi_0[-1])> SMALL :
+        print('Careful: your c.i. PhiO does not have periodic boundaries')
+            
+    # Calculate u wave velocity
+    nx = len(phi_0) # is the number of x points
+    dx = Lx / nx
+    dt = float(T / Nt)
+    u = c * dx / dt
+    
+    ????# Initialise dependent variable
+    ???phiOld = initialConditions(grid.x)
+    ???# Exact solution is the initial condition shifted around the domain
+    ???phiExact = initialConditions((grid.x - c*nt*grid.dx)%grid.length)
