@@ -10,6 +10,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numpy import where, cos, pi , sin
 
+# use exec for grid.py and InitialConditions.py because in 
+# this way python re-read the file
+exec(open("./InitialConditions.py").read())
+exec(open("./grid.py").read()) 
 import Analytical 
 import CTCSAlone
 import CTBSAlone
@@ -19,14 +23,20 @@ def main():
     
     
 
-    # Set the space grid
-    Nx = 100                    # Number of points from x=0 to x=1 inclusive
-    Length=1.0
-    dx = Length / Nx
-    x = np.linspace(0,Length,Nx)     # Points in the x direction
+    # Set the space grid using Grid class
+    gridx = Grid( 100 , 1.0 )
+    dx = gridx.dx 
+    x = gridx.x   # Points in the x direction
     
     
     # Initial conditions for dependent variable phi 
+    
+    bell = cosBell(x)
+    square = squareWave(x, 0.2 , 0.5 )
+    k=5 # wave number of sine function
+    sines = sine (x, k , 2.0)
+    
+    
     # non smooth at x=0.5
     f_0 = where(x<0.5, 0.5*(1-cos(4*pi*x)),0 )
     # Plot initial conditions

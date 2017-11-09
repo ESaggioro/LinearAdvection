@@ -5,16 +5,20 @@ Created on Tue Oct 24 10:00:23 2017
 
 @author: es3017
 """
+## This function computes the analytical solution for the linear advection eq,
+## given an initial condition. 
 
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import where, cos, pi , sin
 
 
+SMALL = 1e-10
+
 def Analytical_Periodic ( phi_0 , c, t, Lx , plotting=0 ):
         # Input Lx = Length of x 
         
-        if np.abs(phi_0[0] -phi_0[-1])> 10**(-10):
+        if np.abs(phi_0[0] -phi_0[-1])> SMALL :
             print('Careful: your c.i. PhiO does not have periodic boundaries')
         
         # Calculate u wave velocity
@@ -51,6 +55,11 @@ def Analytical_Periodic ( phi_0 , c, t, Lx , plotting=0 ):
         
        
         return(phi_t)
+        
+        
+#def Analytical_Hilary ( phi_0 , c, t, Lx , plotting=0 ):
+    #phiExact = initialConditions((grid.x - c*nt*grid.dx)%grid.length)
+
         
 
     
