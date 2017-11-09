@@ -1,120 +1,99 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 24 10:08:12 2017
+Created on Wed Nov  8 16:09:46 2017
 
 @author: es3017
 """
+## This function is the main that I use to solve and analyse 
+# the linear advection problem
 
 import numpy as np
-import matplotlib.pyplot as plt
-from numpy import where, cos, pi , sin
 
-# use exec for grid.py and InitialConditions.py because in 
-# this way python re-read the file
 exec(open("./InitialConditions.py").read())
 exec(open("./grid.py").read()) 
-import Analytical 
-import CTCSAlone
-import CTBSAlone
-import FTCSAlone
+exec(open("./Analytical.py").read())
+exec(open("./Plot.py").read()) 
+exec(open("./CTCS.py").read()) 
+exec(open("./FTBS.py").read()) 
+exec(open("./FTFS.py").read())
+exec(open("./UPWIND.py").read())
 
 def main():
     
-    
-
-    # Set the space grid using Grid class
+    ## Declare an instance of the Grid class, called grid which    ###
+    ## defines the grid for these simulations. 
+    ##Thus grid.dx and grid.x will automatically be defined
     gridx = Grid( 100 , 1.0 )
-    dx = gridx.dx 
-    x = gridx.x   # Points in the x direction
+    x = gridx.x
     
-    
-    # Initial conditions for dependent variable phi 
-    
-    bell = cosBell(x)
-    square = squareWave(x, 0.2 , 0.5 )
-    k=5 # wave number of sine function
-    sines = sine (x, k , 2.0)
-    
-    
-    # non smooth at x=0.5
-    f_0 = where(x<0.5, 0.5*(1-cos(4*pi*x)),0 )
-    # Plot initial conditions
-    plt.clf()
-    plt.ion()
-    plt.plot(x, f_0, color='black', label="Initial conditions")
-    plt.legend(loc="best")
-    plt.axhline(0, linestyle=':',color='black')
-    plt.ylim([-0.2,1.2])
-    plt.show()
-    
-    # Time step and Courant number
-    Nt = 60
+    # Define the time paramenter and Courant number
+    Nt = 110 # NUmber of time steps
+    T = 40  # Physical time
     c = 0.3
     
-    # Call Analytical solution with periodic boundaries
-    f_Analytical = Analytical.Analytical_Periodic ( f_0 , c, Nt, Length , 0 )
+    # Consequent paramenters
+    dt = float(T / Nt)
+    U = c * dt / gridx.dx
     
-    # Call CTBS method with periodic boundaries   
-    f_CTBS = CTBSAlone.CTBS ( f_0 , c , Nt ,Length , 0  )
+    # Some initial conditions and their analytical solutions
+    phi0_Square , phiSquare = Analytical( squareWave , gridx , c , Nt , T , 0.3 , 0.7)
+    phi0_Sine ,phiSine = Analytical( sine , gridx , c , Nt , T , 4 , 1)
+    phi0_Bell ,phiBell = Analytical( cosBell , gridx , c , Nt , T )    
     
-    # Call CTCS method with periodic boundaries    
-    f_CTCS = CTCSAlone.CTCS ( f_0 , c, Nt ,Length , 0  )
+    ##plot_Final(gridx, [phiSine, phiSquare, phiBell] , \
+                ##["sine", "square", "bell"], 'analytical_advection.png' )
     
-    # Call CTBS method with periodic boundaries   
-    f_FTCS = FTCSAlone.FTCS ( f_0 , c, Nt ,Length , 0  )
+    
+    # CTCS scheme for three initial conditions
+    Ctcs_Square = CTCS ( gridx, phi0_Square , c , Nt , T )
+    ##plot_Final(gridx, [Ctcs_Square, phiSquare] , \
+                ##["CTCS scheme", "Analytical"], 'CTCS_square_advection.png' )
+    
+    Ctcs_Sine = CTCS ( gridx, phi0_Sine , c , Nt , T )
+    ##plot_Final(gridx, [Ctcs_Sine, phiSine] , \
+                ##["CTCS scheme", "Analytical"], 'CTCS_sine_advection.png' )
+    
+    Ctcs_Bell = CTCS ( gridx, phi0_Bell , c , Nt , T )
+    ##plot_Final(gridx, [Ctcs_Bell, phiBell] , \
+                ##["CTCS scheme", "Analytical"], 'CTCS_bell_advection.png' )
+    
+    
+    
+    # FTBS scheme for three initial conditions
+    Ftbs_Square = FTBS ( gridx, phi0_Square , c , Nt , T )
+    ##plot_Final(gridx, [Ftbs_Square, phiSquare] , \
+                ##["FTBS scheme", "Analytical"], 'FTBS_square_advection.png' )
+    
+    Ftbs_Sine = FTBS ( gridx, phi0_Sine , c , Nt , T )
+    ##plot_Final(gridx, [Ftbs_Sine, phiSine] , \
+                ##["FTBS scheme", "Analytical"], 'FTBS_sine_advection.png' )
+    
+    Ftbs_Bell = FTBS ( gridx, phi0_Bell , c , Nt , T )
+    ##plot_Final(gridx, [Ftbs_Bell, phiBell] , \
+                ##["FTBS scheme", "Analytical"], 'FTBS_bell_advection.png' )
+    
+    
+    
+    # FTFS scheme for three initial conditions
+    Ftfs_Square = FTFS ( gridx, phi0_Square , c , Nt , T )
+    ##plot_Final(gridx, [Ftfs_Square, phiSquare] , \
+                ##["FTFS scheme", "Analytical"], 'FTFS_square_advection.png' )
+    
+    Ftfs_Sine = FTFS ( gridx, phi0_Sine , c , Nt , T )
+    ##plot_Final(gridx, [Ftfs_Sine, phiSine] , \
+            ##["FTFS scheme", "Analytical"], 'FTFS_sine_advection.png' )
 
-    # Plot all together
-    plt.clf()
-    plt.ion()
-    plt.plot( x, f_CTCS , color='orange', label = "CTCS")
-    plt.plot( x, f_FTCS , color='pink', label = "FTCS")
-    plt.plot(x, f_Analytical, color='blue', label="Analytical")
-    plt.legend(loc="best")
-    plt.axhline(0, linestyle=':',color='black')
-    plt.ylim([ min(f_0)-0.2 , max(f_0)+0.2])
-    plt.title("Linear advection schemes with c=%g at time t=%g" %(c,Nt) )
-    plt.show()
+    Ftfs_Bell = FTFS ( gridx, phi0_Bell , c , Nt , T )
+    ##plot_Final(gridx, [Ftfs_Bell, phiBell] , \
+                ##["FTFS scheme", "Analytical"], 'FTFS_bell_advection.png' )
+                
     
+    # UPWIND scheme for three initial conditions
+    Upwind_Square = UPWIND ( gridx, phi0_Square , c , Nt , T )
+    plot_Final(gridx, [Upwind_Square, phiSquare] , \
+              ["UPWIND scheme", "Analytical"], 'UPWIND_square_advection.png' )
     
-    
-    # Smooth function for CTBS
-    
-    u_0 = sin ( 2 * pi * x)
-    
-    # Plot initial conditions
-    plt.clf()
-    plt.ion()
-    plt.plot(x, u_0, color='black' , label="Initial conditions")
-    plt.legend(loc="best")
-    plt.axhline(0, linestyle=':',color='black')
-    plt.ylim([-1.0,1.0])
-    plt.show()
-    
-    # Call Analytical solution with periodic boundaries
-    u_Analytical = Analytical.Analytical_Periodic ( u_0 , c, Nt, Length , 0 )
-    
-    # Call CTBS method with periodic boundaries   
-    u_CTBS = CTBSAlone.CTBS ( u_0 , c , Nt ,Length , 0  )
-    
-    # Call CTCS method with periodic boundaries    
-    u_CTCS = CTCSAlone.CTCS ( u_0 , c, Nt ,Length , 0  )
-    
-    # Call CTBS method with periodic boundaries   
-    u_FTCS = FTCSAlone.FTCS ( u_0 , c, Nt ,Length , 0  )
-
-    # Plot all together
-    plt.clf()
-    plt.ion()
-    plt.plot( x, u_CTBS , color='green', label = "CTBS")
-    plt.plot( x, u_CTCS , color='orange', label = "CTCS")
-    plt.plot( x, u_FTCS , color='pink', label = "FTCS")
-    plt.plot(x, u_Analytical, color='blue', label="Analytical")
-    plt.legend(loc="best")
-    plt.axhline(0, linestyle=':',color='black')
-    plt.ylim([ min(u_0)-0.2 , max(u_0)+0.2])
-    plt.title("Linear advection schemes with c=%g at time t=%g" %(c,Nt) )
-    plt.show()
     
     
     

@@ -1,65 +1,45 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 24 10:00:23 2017
+Created on Wed Nov  8 16:41:17 2017
 
 @author: es3017
 """
+
 ## This function computes the analytical solution for the linear advection eq,
 ## given an initial condition. 
 
 import numpy as np
-import matplotlib.pyplot as plt
-from numpy import where, cos, pi , sin
+
+# use exec because in this way python re-reads the file every time
+exec(open("./InitialConditions.py").read())
+exec(open("./grid.py").read()) 
 
 
-SMALL = 1e-10
+SMALL = 1e-10 #is a small number to check periodicity of Initial conditions
 
-def Analytical_Periodic ( phi_0 , c, t, Lx , plotting=0 ):
-        # Input Lx = Length of x 
-        
-        if np.abs(phi_0[0] -phi_0[-1])> SMALL :
-            print('Careful: your c.i. PhiO does not have periodic boundaries')
-        
-        # Calculate u wave velocity
-        nx = len(phi_0)
-        dx = Lx / nx
-        dt = 1
-        u = c * dx / dt
-        
-        # how many Lx has the wave passed
-        alpha = int( u*t/Lx ) 
-        
-        # where is the first point after t time steps
-        x_b = u*t - alpha*Lx
-        x_b_index = int(x_b * nx / Lx)
-        
-        # Update phi by slicing and glueing correctly
-        last = phi_0[-x_b_index]
-        phi_t_1st = list(phi_0[-x_b_index:])
-        phi_t_2nd= list(phi_0[1:nx-x_b_index])
-        
-        phi_t =  phi_t_1st + phi_t_2nd + [last]
-        
-        
-        if plotting != 0:
-            
-            x = np.linspace(0,Lx,nx)
-            plt.clf()
-            plt.ion()
-            plt.plot( x, phi_t , 'b-', label = "Analytical function at time t=%g" %t)
-            plt.plot( x, phi_0 , color='black',label = "Initial conditions" )
-            plt.legend(loc="best")
-            plt.title ("Linear advection with c=%g " %c)
-            plt.show()
-        
-       
-        return(phi_t)
-        
-        
-#def Analytical_Hilary ( phi_0 , c, t, Lx , plotting=0 ):
-    #phiExact = initialConditions((grid.x - c*nt*grid.dx)%grid.length)
+def Analytical ( InitialConditions_type , grid , c, Nt , T , *args):
 
-        
-
+    " Analytical solution to linear advection in 1d given the initial profile "
+    # Inputs are :
+    # InitialConditions_type = a string teling the initial function type,
+    # chosen from InitialConditions.py
+    # grid = is the grid object defined for the 1d space dimension
+    # c= the courant number, 
+    # Nt = number of time step , T = physical total time , 
+    # Extra args needed when calling squarewave or sine
     
+    # Initialise dependent variable ( accounting for phiOld args)
+    phiOld = InitialConditions_type(grid.x , *args)
+    # Check periodic boundaries
+    if np.abs(phiOld[0] - phiOld[-1])> SMALL :
+        print('Careful: your initial conditions \
+              Phi_O does not have periodic boundaries')
+            
+    # Exact solution is the initial condition shifted around the domain
+    phiExact = InitialConditions_type((grid.x - c*Nt*grid.dx)%grid.length ,\
+                                      *args)
+    
+    return( phiOld , phiExact )
+    
+
