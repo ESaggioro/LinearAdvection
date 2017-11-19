@@ -17,17 +17,15 @@ import numpy as np
 
 SMALL = 1e-10 #is a small number to check periodicity of Initial conditions
 
-def FTBS ( gridx, phi0, c , nt , T ): 
+def FTBS ( gridx, phi0, c , nt): 
     "Linear advection of initial profile phi0 using FTBS, Courant number c"
-    "for nt time-steps which cover a total time T"
+    "for nt time-steps "
     
     # gridx = the grid object
     # phi0 = initial contition
     # c = courant number
     # Nt = number of time steps
-    # T = physical time 
     
-    # Note: choosing T,c,Nt,gridx.dx means you have determined U and dt
         
     if np.abs(phi0[0] - phi0[-1])> SMALL :
         print('Careful: your c.i. PhiO does not have periodic boundaries')

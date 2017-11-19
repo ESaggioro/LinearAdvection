@@ -9,6 +9,7 @@ Created on Wed Nov  8 16:09:46 2017
 # the linear advection problem
 
 import numpy as np
+import matplotlib as plt
 
 exec(open("./InitialConditions.py").read())
 exec(open("./grid.py").read()) 
@@ -45,6 +46,7 @@ def main():
                 ##["sine", "square", "bell"], 'analytical_advection.png' )
     
     
+    
     # CTCS scheme for three initial conditions
     Ctcs_Square = CTCS ( gridx, phi0_Square , c , Nt , T )
     ##plot_Final(gridx, [Ctcs_Square, phiSquare] , \
@@ -59,6 +61,17 @@ def main():
                 ##["CTCS scheme", "Analytical"], 'CTCS_bell_advection.png' )
     
     
+    for t in [10,30,50,100,200, 500]:
+        CC = CTCS ( gridx, phi0_Bell , c , t , t )
+        phi0bell ,phibell = Analytical( cosBell , gridx , c , t , t ) 
+        plt.plot(x,phibell, color='green', linestyle='--', label = "Analytical")
+        plt.plot(x,CC, color='orange', linestyle='-', label = "CTCS")
+        plt.legend(loc='best')
+        plt.title('time steps ='+str(t), fontsize=12)
+        outfile='CTCS_bell_t'+str(t)
+        plt.savefig(outfile, bbox_inches='tight')
+        plt.show()
+    
     
     # FTBS scheme for three initial conditions
     Ftbs_Square = FTBS ( gridx, phi0_Square , c , Nt , T )
@@ -69,9 +82,33 @@ def main():
     ##plot_Final(gridx, [Ftbs_Sine, phiSine] , \
                 ##["FTBS scheme", "Analytical"], 'FTBS_sine_advection.png' )
     
+    
     Ftbs_Bell = FTBS ( gridx, phi0_Bell , c , Nt , T )
+    
+    for t in [10,30,50,100,200, 500]:
+        FF = FTBS ( gridx, phi0_Bell , c , t , t )
+        phi0bell ,phibell = Analytical( cosBell , gridx , c , t , t ) 
+        plt.plot(x,phibell, color='green', linestyle='--', label = "Analytical")
+        plt.plot(x,FF, color='blue', linestyle='-', label = "FTBS")
+        plt.legend(loc='best')
+        plt.title('time steps ='+str(t), fontsize=12)
+        outfile='FTBS_bell_t'+str(t)
+        plt.savefig(outfile, bbox_inches='tight')
+        plt.show()
+        
     ##plot_Final(gridx, [Ftbs_Bell, phiBell] , \
                 ##["FTBS scheme", "Analytical"], 'FTBS_bell_advection.png' )
+    
+    plot_Final(gridx, [Ftbs_Bell, Ctcs_Bell, phiBell ] , \
+                ["FTBS", "CTCS", "Analytical"],'FTBS_CTCS_bell.pdf') 
+    
+    Error_FTBS_bell=l2_norm ( Ftbs_Bell, phiBell)
+    Error_CTCS_bell=l2_norm ( Ctcs_Bell, phiBell)
+    
+    print("Error FTBS = ", Error_FTBS_bell)
+    
+    print("Error CTCS = ", Error_CTCS_bell)
+    
     
     
     
@@ -89,10 +126,12 @@ def main():
                 ##["FTFS scheme", "Analytical"], 'FTFS_bell_advection.png' )
                 
     
+    
+    
     # UPWIND scheme for three initial conditions
     Upwind_Square = UPWIND ( gridx, phi0_Square , c , Nt , T )
-    plot_Final(gridx, [Upwind_Square, phiSquare] , \
-              ["UPWIND scheme", "Analytical"], 'UPWIND_square_advection.png' )
+    #plot_Final(gridx, [Upwind_Square, phiSquare] , \
+              #["UPWIND scheme", "Analytical"], 'UPWIND_square_advection.png' )
     
     
     

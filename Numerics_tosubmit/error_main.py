@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Nov  9 17:55:25 2017
+Created on Tue Nov 14 17:44:26 2017
 
 @author: es3017
 """
+#-----------------------------------------------------------------------------
 
-## This function is the main that I use to solve and analyse 
-# the linear advection problem
+## This function is the main that I use to analyse errors for
+## the linear advection problem
+
+#-----------------------------------------------------------------------------
 
 import numpy as np
 import matplotlib as plt
@@ -22,100 +25,182 @@ exec(open("./FTFS.py").read())
 exec(open("./UPWIND.py").read())
 exec(open("./L_norm_errors.py").read())
 
+
+exec(open("./Analytical_Slicing.py").read())
+
+
+
 def main():
+
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+    ## SPACE-TIME GRID AND COURANT NUMBER DEFINITION    
+
+    ## Define the physical total time T and Courant number c
+    # YOU WILL WANT TO ASK (L,Nx) AS INPUT TO THE USER ---------- 
+    T = 10
+    print('The total time chosen is T = ' , T)
+    c = 0.5 
+    print('The Courant number chosen is c = ' , c)
     
-    ## Declare an instance of the Grid class, called grid which    ###
-    ## defines the grid for these simulations. 
-    ##Thus grid.dx and grid.x will automatically be defined
+    
+    ## Define the space grid, using grid class, \
+    ## giving L length and Nx number of grid points
+    
+    # YOU WILL WANT TO ASK (L,Nx) AS INPUT TO THE USER ---------- 
     L = 1.0
-    Nx = [ 2, 5 ,10 ,15, 20, 25, 30 , 50 , 100 ,150]
+    Nx = [ 40,80,160,320, 400 ]
+    print('The total length chosen is L = ' , L)
+    print('The number of grid points are Nx = ' , Nx )
+    
+    ## Define d = Nt/Nx ratio
+    # YOU WILL WANT TO ASK (L,Nx) AS INPUT TO THE USER ---------- 
+    d = 1 
+    print('The ratio d=Nt/Nx chosen is d = ' , d)
+    
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------  
+    
+    # Consequent time paramenters
+    Nt = [ int(nx*d) for nx in Nx]
+    dt = [float(T/n) for n in Nt]
+    
+    # Consequent space paramenters
     gridx = [ Grid( n , L ) for n in Nx ] 
-    x = [gridx[i].x for i in range(len(Nx)) ]
+    x = [grid.x for grid in gridx ]
+    dx = [grid.dx for grid in gridx ]
     
-    # Define the time paramenter and Courant number
-    Nt = 100 # Number of time steps 
-    T = 40
-    c = 0.3 
+    print('The dx chosen are dxs = ' , dx)
+   
+    # Consequent velocity of the linear advection
+    U = [ (c * dx[i] / dt[i]) for i in range(len(dx))]
+    print('The various physical velocities (should be the same) are u = ' , U)
     
-    # Consequent paramenters
-    dt = float(T / Nt)
-    # you haev U [i] = c * gridx[i].dx / dt
+  
     
-    # Square wave and analytical solutions for various dx-resolutions
-    phi0_Square = [ np.zeros_like(x[0]) for n in Nx]
-    phiSquare = [ np.zeros_like(x[0]) for n in Nx]
-    alpha = 0.3
-    beta = 0.7
+    ## ERROR COMPUTATION ON THE CTCS AND FTBS NUMERICAL SCHEMES
+
     
-    # L2 Errors
+    ## phi_0 and phi_exact initialized to 0-vectors, for the various x-grids
+    phi0_s = [ np.zeros(n , dtype=float) for n in Nx]
+    phiExact_s = [ np.zeros(n , dtype=float) for n in Nx] 
     
-    Error_Square_CTCS = [0.0 for i in range(len(Nx))]
-    Error_Square_FTBS = [0.0 for i in range(len(Nx))]
+    ## Numerical solutions initialized to 0-vectors, for the various x-grids 
+    Function_FTBS = [ np.zeros(n , dtype=float) for n in Nx]
+    Function_CTCS = [ np.zeros(n , dtype=float) for n in Nx]
     
-    Ctcs_Square = [ np.zeros_like(x[0]) for n in Nx]
-    Ftbs_Square = [ np.zeros_like(x[0]) for n in Nx]
+    ## Errors vectors initialized to 0 scalar, for the various x-grids
+    Error_FTBS = [0.0 for i in range(len(Nx))]
+    Error_CTCS = [0.0 for i in range(len(Nx))]
     
-    for i in range(len(Nx)): # run over different grid resolution
-        phi0_Square[i] , phiSquare[i] = \
-        Analytical( squareWave , gridx[i] , c , Nt , T , alpha , beta )
+    
+    # Con slice analytical
+    phiExact_Slice = [ np.zeros(n , dtype=float) for n in Nx]
+    Error_FTBS_Slice = [0.0 for i in range(len(Nx))]
+    Error_CTCS_Slice = [0.0 for i in range(len(Nx))]
+    Errorinfty_FTBS_Slice = [0.0 for i in range(len(Nx))]
+    Errorinfty_CTCS_Slice = [0.0 for i in range(len(Nx))]
         
-        Ctcs_Square[i] = CTCS ( gridx[i], phi0_Square[i] , c , Nt , T )
-        Ftbs_Square[i] = FTBS ( gridx[i], phi0_Square[i] , c , Nt , T )
+   
+    
+    
+    # Evolve for nt time steps the i.c. (set to bell function)
+    # for Analytical, FTCB and CTCS. 
+    # And compute error - norm
+    for i,grid in enumerate(gridx): # run over different grid resolution
+        print('Number of time steps=', Nt[i])
+        phi0_s[i] , phiExact_s[i] = \
+        Analytical( cosBell , grid , c , Nt[i] ,L )
         
-        Error_Square_CTCS[i]=l2_norm (Ctcs_Square[i] , phiSquare[i])
-        Error_Square_FTBS[i]=l2_norm (Ftbs_Square[i] , phiSquare[i])
+        
+        Function_CTCS[i]  = CTCS ( grid, phi0_s[i] , c , Nt[i] )
+        Function_FTBS[i]  = FTBS ( grid, phi0_s[i] , c , Nt[i] )
+        
+        Error_CTCS[i]=l2_norm(Function_CTCS[i] ,phiExact_s[i])
+        Error_FTBS[i]=l2_norm(Function_FTBS[i] ,phiExact_s[i])
+        
+        #Analytical con slicing
+        phiExact_Slice[i] =  Analytical_Periodic (phi0_s[i], c, Nt[i] ,grid  )
+        Error_CTCS_Slice[i]=l2_norm(Function_CTCS[i] ,phiExact_Slice[i])
+        Error_FTBS_Slice[i]=l2_norm(Function_FTBS[i] ,phiExact_Slice[i])
+        
+        Errorinfty_CTCS_Slice[i]=linfty_norm(Function_CTCS[i] ,phiExact_Slice[i])
+        Errorinfty_FTBS_Slice[i]=linfty_norm(Function_FTBS[i] ,phiExact_Slice[i])
+        
+        
+        
+        
+        
      
-    dx2 = [(gridx[i].dx)*(gridx[i].dx) for i in range(len(Nx)) ]
-    dx = [gridx[i].dx for i in range(len(Nx)) ]
+    
+    # Plot CTCS and FTBS errors in same log - log plot
+    
+    #plot_l2error( dx, [ Error_FTBS , Error_CTCS  ] , \
+                #["FTBS ", "CTCS"],['blue' , 'orange'] ,\
+                #'L2_bell_CTCSFTBS_Ufix.pdf', \
+                #title='$l_{2}$-norm errors for cosbell function', \
+                #xlabel='$\Delta x$' )  
+    # Fit the errors:
+    logdx = np.log10(dx)
+    logerrCTCS = np.log10(Error_CTCS)
+    logerrFTBS = np.log10(Error_FTBS)
     
     
-    plot_l2error( dx2, [ Error_Square_CTCS ] , \
-                ["CTCS "],'Errors_squarefunction_CTCS.png', \
-                title='$l_2$ norm error, $\phi$ square function', \
-                xlabel='$(\Delta x)^2$' )
+    CTCSfit=np.polyfit(logdx,logerrCTCS, 1)
+    FTBSfit=np.polyfit(logdx,logerrFTBS, 1)
     
-    plot_l2error( dx, [ Error_Square_FTBS ] , \
-                ["FTBS "],'Errors_squarefunction_FTBS.png', \
-                title='$l_2$ norm error, $\phi$ square function' , \
-                xlabel='$(\Delta x)$ ')
-    
-    # Cosbell wave and analytical solutions for various dx-resolutions
-    phi0_Bell = [ np.zeros_like(x[0]) for n in Nx]
-    phiBell = [ np.zeros_like(x[0]) for n in Nx]
-    
-    # L2 Errors
-    
-    Error_Bell_CTCS = [0.0 for i in range(len(Nx))]
-    Error_Bell_FTBS = [0.0 for i in range(len(Nx))]
-    
-    Ctcs_Bell = [ np.zeros_like(x[0]) for n in Nx]
-    Ftbs_Bell = [ np.zeros_like(x[0]) for n in Nx]
-    
-    for i in range(len(Nx)): # run over different grid resolution
-        phi0_Bell[i] , phiBell[i] = \
-        Analytical( cosBell , gridx[i] , c , Nt , T  )
-        
-        Ctcs_Bell[i] = CTCS ( gridx[i], phi0_Bell[i] , c , Nt , T )
-        Ftbs_Bell[i] = FTBS ( gridx[i], phi0_Bell[i] , c , Nt , T )
-        
-        Error_Bell_CTCS[i]=l2_norm (Ctcs_Bell[i] , phiBell[i])
-        Error_Bell_FTBS[i]=l2_norm (Ftbs_Bell[i] , phiBell[i])
-     
-    dx2 = [(gridx[i].dx)*(gridx[i].dx) for i in range(len(Nx)) ]
-    dx = [gridx[i].dx for i in range(len(Nx)) ]
+    #print("Ctcs parameters = ", CTCSfit)
+    #print("Ftbs parameters = ", FTBSfit)
     
     
-    plot_l2error( dx2, [ Error_Bell_CTCS ] , \
-                ["CTCS "],'Errors_Bellfunction_CTCS.png', \
-                title='$l_2$ norm error, $\phi$ cosBell function', \
-                xlabel='$(\Delta x)^2$' )
+    # Slice analytical L2
+    plot_error( dx, [ Error_FTBS_Slice , Error_CTCS_Slice  ] , \
+                ["FTBS ", "CTCS"],['blue' , 'orange'] ,\
+                'L2_LogError_CTCSFTBS.pdf', \
+                title='$l_{2}$-norm errors for cosbell function', \
+                xlabel='$\Delta x$' )
+    # Fit the errors SLICE analytical:
+    logerrCTCS_Slice = np.log10(Error_CTCS_Slice)
+    logerrFTBS_Slice = np.log10(Error_FTBS_Slice)
     
-    plot_l2error( dx, [ Error_Bell_FTBS ] , \
-                ["FTBS "],'Errors_squarefunction_FTBS.png', \
-                title='$l_2$ norm error, $\phi$ cosBell function' , \
-                xlabel='$(\Delta x)$ ')
+    
+    CTCSfit_Slice=np.polyfit(logdx,logerrCTCS_Slice, 1)
+    FTBSfit_Slice=np.polyfit(logdx,logerrFTBS_Slice, 1)
+    
+    print("Ctcs parameters SLICE = ", CTCSfit_Slice)
+    print("Ftbs parameters SLICE = ", FTBSfit_Slice)
+    
+    print("logErr_Ftbs SLICE = ", logerrFTBS_Slice)
+    print("logErr_CTCS SLICE = ", logerrCTCS_Slice)
     
     
+    # Slice analytical Linfty
+    plot_error( dx, [ Errorinfty_FTBS_Slice , Errorinfty_CTCS_Slice  ] , \
+                ["FTBS ", "CTCS"],['blue' , 'orange'] ,\
+                'Linfty_LogError_CTCSFTBS.pdf', \
+                title='$l_{\infty}$-norm errors for cosbell function', \
+                xlabel='$\Delta x$' )
+    # Fit the errors SLICE analytical:
+    logerrinftyCTCS_Slice = np.log10(Errorinfty_CTCS_Slice)
+    logerrinftyFTBS_Slice = np.log10(Errorinfty_FTBS_Slice)
+    
+    
+    CTCSfitinfty_Slice=np.polyfit(logdx,logerrinftyCTCS_Slice, 1)
+    FTBSfitinfty_Slice=np.polyfit(logdx,logerrinftyFTBS_Slice, 1)
+    
+    print("Ctcs parameters infty = ", CTCSfitinfty_Slice)
+    print("Ftbs parameters infty = ", FTBSfitinfty_Slice)
+    
+    print("logErr_Ftbs infty = ", logerrinftyFTBS_Slice)
+    print("logErr_CTCS infty = ", logerrinftyCTCS_Slice)
+    
+    #for i in range(len(Nx)):
+       # plt.plot(x[i],Function_FTBS[i], color='blue', label="Ftbs")
+       # plt.plot(x[i],Function_CTCS[i], color='orange', label="Ctcs")
+       # plt.plot(x[i],phiExact_s[i] , color = 'green', label="Exact")
+       # plt.title('Nx='+str(Nx[i]))
+       # plt.legend()
+       # plt.show()
     
     
         

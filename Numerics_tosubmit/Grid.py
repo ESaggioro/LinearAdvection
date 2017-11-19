@@ -18,11 +18,11 @@ class Grid(object):
     "The grid is assumed periodic."
     def __init__(self, nx, Length , xmin=0.0):
         self.xmin = xmin
-        self.length = float(Length)
+        self.length =np.float64(Length)
         self.xmax = xmin + Length 
         self.nx = int(nx)
         self.dx = self.length/self.nx
-        # The x locations, excluding the end point
+        # The x locations, including the end point
         self.x = np.linspace(self.xmin, self.length, self.nx)
         
 

@@ -41,11 +41,10 @@ def l2_norm (phi , f):
         l2 = float('nan') 
             
     else:
-    
-        diff_sq = (phi - f)**2
-        num = np.sqrt( np.sum (diff_sq))
-        den = np.sqrt( np.sum ( f**2 ) ) 
-        l2 = num / den
+     
+        num =  np.sum(np.square(phi-f))
+        den = np.sum ( np.square(f ) ) 
+        l2 = (num / den)**0.5
             
     return(l2)
         

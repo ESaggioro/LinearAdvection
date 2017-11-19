@@ -13,12 +13,12 @@ Created on Wed Nov  8 15:41:31 2017
 
 import numpy as np
 
-def cosBell(x):
+def cosBell(x , Lx):
     "Function defining a cosine bell as a function of position, x"
-### The lambda keyword lets you define a function in one line       ###
-    bell = lambda x: 0.5*(1 - np.cos(4*np.pi*x))
-### chooses bell(x) where condition is true, else chooses zeros     ###
-    return np.where((x<0.5) | (x>=1.0), bell(x), 0.)
+    
+    x = np.float64(x / Lx )
+    bell = np.where(x<0.5, 0.5*(1-np.cos(4*np.pi*x)),0)
+    return(bell)
 
 def squareWave(x,alpha,beta):
     "A square wave as a function of position, x, which is 1 between alpha"
@@ -26,7 +26,7 @@ def squareWave(x,alpha,beta):
     "that each phi contains the correct quantity integrated over a region"
     "a distance dx/2 either side of x"
     
-    ### WHY you WANT this CONSERVATION??
+    ### WHY you WANT this CONSERVATION?? For Mass conservation?
     
     phi = np.zeros_like(x)
     
