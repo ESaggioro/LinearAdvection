@@ -24,18 +24,22 @@ def Analytical_Periodic ( phi_0 , c, tsteps , grid , plotting=0 ):
         
         if np.abs(phi_0[0] - phi_0[-1])> SMALL :
             print('Careful: your c.i. PhiO does not have periodic boundaries')
-        
-
+    
         nx = grid.nx
         dx = grid.dx
         
-        
         # ALTERNATIVE
         x_b_INDEX = int(round(((c*tsteps*grid.dx)%grid.length) / dx))+1
-        PHI_t_2nd= list(phi_0 [1:-x_b_INDEX+1])
-        PHI_t_1st= list (phi_0 [-x_b_INDEX :]  )
-        PHI_T = PHI_t_1st +  PHI_t_2nd 
-    
+        if x_b_INDEX == 1:
+            
+            PHI_t_2nd = list(phi_0[:-1])
+            PHI_T = [phi_0[-2] ] + PHI_t_2nd
+        else:
+            
+            PHI_t_2nd = list(phi_0 [1:-x_b_INDEX+1])
+            PHI_t_1st = list (phi_0 [-x_b_INDEX :]  )
+            PHI_T = PHI_t_1st +  PHI_t_2nd 
+            
         if plotting != 0:
             
             x = np.linspace(0,grid.length,grid.nx)

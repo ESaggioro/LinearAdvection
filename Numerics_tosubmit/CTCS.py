@@ -16,13 +16,13 @@ exec(open("./FTFS.py").read())
 
 SMALL = 1e-10 #is a small number to check periodicity of Initial conditions
 
-def CTCS ( gridx, phi0, c , nt ): 
+def CTCS ( gridx, phi0, c , tsteps ): 
     "Linear advection of initial profile phi0 using CTCS, Courant number c"
-    "for nt time-steps "
+    "for tsteps time-steps "
     # gridx = the grid object
     # phi0 = initial contition
     # c = courant number
-    # nt = number of time steps
+    # tsteps = number of time steps
     
     if np.abs(phi0[0] -phi0[-1])> SMALL :
         print('Careful: your c.i. PhiO does not have periodic boundaries')
@@ -38,8 +38,8 @@ def CTCS ( gridx, phi0, c , nt ):
     phiOld1 = FTBS (gridx, phi0, c , 1)    
     
     
-    # Loop over time steps t = 1,..(nt)  (total of nt-1 elements)
-    for it in range(1,nt):  
+    # Loop over time steps t = 1,..(tsteps)  (total of tsteps-1 elements)
+    for it in range(1,tsteps):  
         # Loop CTCS over space (excluding end points)
         for ix in range(1,nx-1):
             phi[ix] = phiOld2[ix] - c * ( phiOld1[ix+1] - phiOld1[ix-1] )
