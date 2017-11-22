@@ -26,7 +26,7 @@ exec(open("./UPWIND.py").read())
 exec(open("./L_norm_errors.py").read())
 
 
-exec(open("./Analytical_Slicing.py").read())
+#exec(open("./Analytical_Slicing.py").read())
 
 
 
@@ -40,7 +40,7 @@ def main():
     # YOU WILL WANT TO ASK (L,Nx) AS INPUT TO THE USER ---------- 
     T = 10
     print('The total time chosen is T = ' , T)
-    c = 0.5 
+    c = 0.6 
     print('The Courant number chosen is c = ' , c)
     
     
@@ -55,16 +55,15 @@ def main():
     
     ## Define d = Nt/Nx ratio
     # YOU WILL WANT TO ASK (L,Nx) AS INPUT TO THE USER ---------- 
-    d = 1 
+    d = 3 
     print('The ratio d=Nt/Nx chosen is d = ' , d)
     
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------  
     
     # Consequent time paramenters
-    Nt = [ int(nx*d) for nx in Nx]
-    dt = [float(T/n) for n in Nt]
-    
+    Nt = [ n * int(d) for n in Nx] 
+   
     # Consequent space paramenters
     gridx = [ Grid( n , L ) for n in Nx ] 
     x = [grid.x for grid in gridx ]
@@ -73,8 +72,8 @@ def main():
     print('The dx chosen are dxs = ' , dx)
    
     # Consequent velocity of the linear advection
-    U = [ (c * dx[i] / dt[i]) for i in range(len(dx))]
-    print('The various physical velocities (should be the same) are u = ' , U)
+    U = c * d* ( L / T)
+    print('The physical velocity is u = ' , U)
     
   
     
@@ -92,14 +91,19 @@ def main():
     ## Errors vectors initialized to 0 scalar, for the various x-grids
     Error_FTBS = [0.0 for i in range(len(Nx))]
     Error_CTCS = [0.0 for i in range(len(Nx))]
+    Errorinfty_FTBS = [0.0 for i in range(len(Nx))]
+    Errorinfty_CTCS = [0.0 for i in range(len(Nx))]
+    
+    
+    
     
     
     # Con slice analytical
-    phiExact_Slice = [ np.zeros(n , dtype=float) for n in Nx]
-    Error_FTBS_Slice = [0.0 for i in range(len(Nx))]
-    Error_CTCS_Slice = [0.0 for i in range(len(Nx))]
-    Errorinfty_FTBS_Slice = [0.0 for i in range(len(Nx))]
-    Errorinfty_CTCS_Slice = [0.0 for i in range(len(Nx))]
+    #phiExact_Slice = [ np.zeros(n , dtype=float) for n in Nx]
+    #Error_FTBS_Slice = [0.0 for i in range(len(Nx))]
+    #Error_CTCS_Slice = [0.0 for i in range(len(Nx))]
+    #Errorinfty_FTBS_Slice = [0.0 for i in range(len(Nx))]
+    #Errorinfty_CTCS_Slice = [0.0 for i in range(len(Nx))]
         
    
     
@@ -119,28 +123,23 @@ def main():
         Error_CTCS[i]=l2_norm(Function_CTCS[i] ,phiExact_s[i])
         Error_FTBS[i]=l2_norm(Function_FTBS[i] ,phiExact_s[i])
         
+        Errorinfty_CTCS[i]=linfty_norm(Function_CTCS[i] ,phiExact_s[i])
+        Errorinfty_FTBS[i]=linfty_norm(Function_FTBS[i] ,phiExact_s[i])
+        
+        
         #Analytical con slicing
-        phiExact_Slice[i] =  Analytical_Periodic (phi0_s[i], c, Nt[i] ,grid  )
-        Error_CTCS_Slice[i]=l2_norm(Function_CTCS[i] ,phiExact_Slice[i])
-        Error_FTBS_Slice[i]=l2_norm(Function_FTBS[i] ,phiExact_Slice[i])
+        #phiExact_Slice[i] =  Analytical_Periodic (phi0_s[i], c, Nt[i] ,grid  )
+        #Error_CTCS_Slice[i]=l2_norm(Function_CTCS[i] ,phiExact_Slice[i])
+        #Error_FTBS_Slice[i]=l2_norm(Function_FTBS[i] ,phiExact_Slice[i])
         
-        Errorinfty_CTCS_Slice[i]=linfty_norm(Function_CTCS[i] ,phiExact_Slice[i])
-        Errorinfty_FTBS_Slice[i]=linfty_norm(Function_FTBS[i] ,phiExact_Slice[i])
-        
-        
+        #Errorinfty_CTCS_Slice[i]=linfty_norm(Function_CTCS[i] ,phiExact_Slice[i])
+        #Errorinfty_FTBS_Slice[i]=linfty_norm(Function_FTBS[i] ,phiExact_Slice[i])
         
         
         
-     
-    
-    # Plot CTCS and FTBS errors in same log - log plot
-    
-    #plot_l2error( dx, [ Error_FTBS , Error_CTCS  ] , \
-                #["FTBS ", "CTCS"],['blue' , 'orange'] ,\
-                #'L2_bell_CTCSFTBS_Ufix.pdf', \
-                #title='$l_{2}$-norm errors for cosbell function', \
-                #xlabel='$\Delta x$' )  
+        
     # Fit the errors:
+    # L2
     logdx = np.log10(dx)
     logerrCTCS = np.log10(Error_CTCS)
     logerrFTBS = np.log10(Error_FTBS)
@@ -149,50 +148,65 @@ def main():
     CTCSfit=np.polyfit(logdx,logerrCTCS, 1)
     FTBSfit=np.polyfit(logdx,logerrFTBS, 1)
     
-    #print("Ctcs parameters = ", CTCSfit)
-    #print("Ftbs parameters = ", FTBSfit)
+    print('L2 errors:')
+    print("Ctcs parameters = ", CTCSfit)
+    print("Ftbs parameters = ", FTBSfit)
+    
+    # L infinity
+    logerrCTCS_inf = np.log10(Errorinfty_CTCS)
+    logerrFTBS_inf = np.log10(Errorinfty_FTBS)
     
     
-    # Slice analytical L2
-    plot_error( dx, [ Error_FTBS_Slice , Error_CTCS_Slice  ] , \
+    CTCSfit_inf=np.polyfit(logdx,logerrCTCS_inf, 1)
+    FTBSfit_inf=np.polyfit(logdx,logerrFTBS_inf, 1)
+    
+    print('L infinity errors:')
+    print("Ctcs parameters = ", CTCSfit_inf)
+    print("Ftbs parameters = ", FTBSfit_inf)
+    
+    
+    
+    
+    
+    # PLOT L2
+    plot_error( dx, [ Error_FTBS , Error_CTCS  ] , \
                 ["FTBS ", "CTCS"],['blue' , 'orange'] ,\
-                'L2_LogError_CTCSFTBS.pdf', \
-                title='$l_{2}$-norm errors for cosbell function', \
+                'L2_LogError_CTCSFTBS_c06.pdf', \
+                title='$l_{2}$-norm errors for cosbell function c=%g'%c, \
                 xlabel='$\Delta x$' )
     # Fit the errors SLICE analytical:
-    logerrCTCS_Slice = np.log10(Error_CTCS_Slice)
-    logerrFTBS_Slice = np.log10(Error_FTBS_Slice)
+    #logerrCTCS_Slice = np.log10(Error_CTCS)
+    #logerrFTBS_Slice = np.log10(Error_FTBS)
     
     
-    CTCSfit_Slice=np.polyfit(logdx,logerrCTCS_Slice, 1)
-    FTBSfit_Slice=np.polyfit(logdx,logerrFTBS_Slice, 1)
+    #CTCSfit_Slice=np.polyfit(logdx,logerrCTCS, 1)
+    #FTBSfit_Slice=np.polyfit(logdx,logerrFTBS_Slice, 1)
     
-    print("Ctcs parameters SLICE = ", CTCSfit_Slice)
-    print("Ftbs parameters SLICE = ", FTBSfit_Slice)
+    #print("Ctcs parameters SLICE = ", CTCSfit_Slice)
+    #print("Ftbs parameters SLICE = ", FTBSfit_Slice)
     
-    print("logErr_Ftbs SLICE = ", logerrFTBS_Slice)
-    print("logErr_CTCS SLICE = ", logerrCTCS_Slice)
+    #print("logErr_Ftbs SLICE = ", logerrFTBS_Slice)
+    #print("logErr_CTCS SLICE = ", logerrCTCS_Slice)
     
     
-    # Slice analytical Linfty
-    plot_error( dx, [ Errorinfty_FTBS_Slice , Errorinfty_CTCS_Slice  ] , \
+    # PLOT ERROR Linfty
+    plot_error( dx, [ Errorinfty_FTBS , Errorinfty_CTCS  ] , \
                 ["FTBS ", "CTCS"],['blue' , 'orange'] ,\
-                'Linfty_LogError_CTCSFTBS.pdf', \
-                title='$l_{\infty}$-norm errors for cosbell function', \
+                'Linfty_LogError_CTCSFTBS_c06.pdf', \
+                title='$l_{\infty}$-norm errors for cosbell functionc=%g'%c, \
                 xlabel='$\Delta x$' )
     # Fit the errors SLICE analytical:
-    logerrinftyCTCS_Slice = np.log10(Errorinfty_CTCS_Slice)
-    logerrinftyFTBS_Slice = np.log10(Errorinfty_FTBS_Slice)
+    #logerrinftyCTCS_Slice = np.log10(Errorinfty_CTCS_Slice)
+    #logerrinftyFTBS_Slice = np.log10(Errorinfty_FTBS_Slice)
     
     
-    CTCSfitinfty_Slice=np.polyfit(logdx,logerrinftyCTCS_Slice, 1)
-    FTBSfitinfty_Slice=np.polyfit(logdx,logerrinftyFTBS_Slice, 1)
+    #CTCSfitinfty_Slice=np.polyfit(logdx,logerrinftyCTCS_Slice, 1)
+    #FTBSfitinfty_Slice=np.polyfit(logdx,logerrinftyFTBS_Slice, 1)
     
-    print("Ctcs parameters infty = ", CTCSfitinfty_Slice)
-    print("Ftbs parameters infty = ", FTBSfitinfty_Slice)
+    #print("Ctcs parameters infty = ", CTCSfitinfty_Slice)
+    #print("Ftbs parameters infty = ", FTBSfitinfty_Slice)
     
-    print("logErr_Ftbs infty = ", logerrinftyFTBS_Slice)
-    print("logErr_CTCS infty = ", logerrinftyCTCS_Slice)
+    
     
     #for i in range(len(Nx)):
        # plt.plot(x[i],Function_FTBS[i], color='blue', label="Ftbs")

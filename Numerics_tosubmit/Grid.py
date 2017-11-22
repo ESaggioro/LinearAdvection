@@ -21,9 +21,10 @@ class Grid(object):
         self.length =np.float64(Length)
         self.xmax = xmin + Length 
         self.nx = int(nx)
-        self.dx = self.length/self.nx
         # The x locations, including the end point
         self.x = np.linspace(self.xmin, self.length, self.nx)
+        
+        self.dx =self.x[1]-self.x[0]
         
 
 

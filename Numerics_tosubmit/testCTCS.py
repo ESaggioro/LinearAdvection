@@ -12,8 +12,10 @@ Created on Sun Nov 19 11:36:02 2017
 
 exec(open("./InitialConditions.py").read())
 exec(open("./grid.py").read()) 
+exec(open("./CTCS.py").read())
 exec(open("./Analytical.py").read())
 exec(open("./Analytical_Slicing.py").read())
+
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,16 +43,16 @@ def main():
     
     # test on cos bell function
     
-    cos0 = cosBell( Gridx.x ,L)
+    cos0 = cosBell( Gridx.x ,L )
     for nt in tsteps: 
-
+        cos0H , cosT_hilary = Analytical ( cosBell , Gridx , c, nt, L )
         cosT_SLICE = Analytical_Periodic (cos0, c, nt ,Gridx  )
         cosCTCS = CTCS (Gridx , cos0 , c , nt)
         
         plt.clf()
         plt.ion()
-        plt.plot(Gridx.x , cosT_SLICE, 'g--', linewidth=0.8, \
-                 label='Exact')
+        plt.plot(Gridx.x , cosT_hilary, 'g--', linewidth=0.8, \
+                 label='Exact ')
         plt.plot(Gridx.x , cosCTCS, color='orange', linestyle='--',\
                  linewidth=1.5, label='CTCS')
         plt.xlabel('x')
