@@ -13,10 +13,11 @@ import matplotlib as plt
 
 exec(open("./InitialConditions.py").read())
 exec(open("./grid.py").read()) 
-exec(open("./Analytical_Slicing.py").read())
+exec(open("./Analytical.py").read())
 exec(open("./LaxWendroff.py").read()) 
 exec(open("./CTCS.py").read()) 
 exec(open("./FTBS.py").read())
+exec(open("./CNCS.py").read())
 exec(open("./MassVariance.py").read())
 exec(open("./Plot.py").read())
 
@@ -38,67 +39,63 @@ def main():
     u = c * Gridx.dx / dt
     print( ' u = ', u)
     
-    # time intervals you want to compute:
-    interval = [ int(i*T/10) for i in range(1,11)]
-    # M and V for every interval and every scheme
-    MExact=[0.0 for i in interval]
-    MFTBS=[0.0 for i in interval]
-    MCTCS=[0.0 for i in interval]
-    MLAX=[0.0 for i in interval]
+    # M and V for every scheme
+    MExact = np.zeros(tsteps)
+    MFTBS = np.zeros(tsteps)
+    MCTCS = np.zeros(tsteps)
+    MLAX = np.zeros(tsteps)
+    MCNCS = np.zeros(tsteps)
     
-    VExact=[0.0 for i in interval]
-    VFTBS=[0.0 for i in interval]
-    VCTCS=[0.0 for i in interval]
-    VLAX=[0.0 for i in interval]
+    VExact = np.zeros(tsteps)
+    VFTBS = np.zeros(tsteps)
+    VCTCS = np.zeros(tsteps)
+    VLAX = np.zeros(tsteps)
+    VCNCS = np.zeros(tsteps)
     
     # Cosbell function evolved with 3 schemes and Exact solution
     phi0 = cosBell ( Gridx.x , L) # initial condition
     M0 = Mass (phi0 , Gridx.dx) # initial Mass
     V0 = Variance (phi0 , Gridx.dx) # initial Variance
     
-    for j,ts in enumerate(interval): # M and V at different times
-        phiExact = Analytical_Periodic (phi0 , c, ts , Gridx) # Exact solution
+    philoopF = np.copy(phi0)
+    philoopCT = np.copy(phi0)
+    philoopCN = np.copy(phi0)
+    philoopLA = np.copy(phi0)
     
-        phiFTBS = FTBS (Gridx, phi0, c , ts) # FTBS sceheme
-        phiCTCS = CTCS (Gridx, phi0, c , ts)  # CTCS sceheme
-        phiLAX = LaxWendroff ( Gridx, phi0, c , ts ) # LaxWendroff scheme
+    for t in range(1, tsteps+1): # M and V in time
+        
+        phiFTBS = FTBS (Gridx, philoopF, c , 1 ) # FTBS sceheme
+        phiCTCS = CTCS (Gridx, philoopCT, c , 2 )  # CTCS sceheme
+        phiLAX = LaxWendroff ( Gridx, philoopLA , c , 1 ) # LaxWendroff scheme
+        phiCNCS = CNCS (Gridx, philoopCN, c , 1 )  # CTCS sceheme
+         
+        # Compute Mass after t
+        MFTBS[t-1] = Mass(phiFTBS , Gridx.dx)
+        MCTCS[t-1] = Mass(phiCTCS , Gridx.dx)
+        MLAX[t-1] = Mass (phiLAX , Gridx.dx)
+        MCNCS[t-1] = Mass (phiCNCS , Gridx.dx)
     
-        # Compute Mass after tsteps
-        MExact[j] = Mass(phiExact , Gridx.dx)
-        MFTBS[j] = Mass(phiFTBS , Gridx.dx)
-        MCTCS[j] = Mass(phiCTCS , Gridx.dx)
-        MLAX[j] = Mass (phiLAX , Gridx.dx)
-    
-        # Compute Variance after tsteps
-        VExact[j] = Variance(phiExact , Gridx.dx)
-        VFTBS[j] = Variance(phiFTBS , Gridx.dx)
-        VCTCS[j] = Variance(phiCTCS , Gridx.dx)
-        VLAX[j] = Variance (phiLAX , Gridx.dx)
-    
+        # Compute Variance after t
+        VFTBS[t-1] = Variance(phiFTBS , Gridx.dx)
+        VCTCS[t-1] = Variance(phiCTCS , Gridx.dx)
+        VLAX[t-1] = Variance (phiLAX , Gridx.dx)
+        VCNCS[t-1] = Variance (phiCNCS , Gridx.dx)
+        
+        # Update
+        philoopF = phiFTBS
+        philoopCT = phiCTCS 
+        philoopLA = phiLAX 
+        philoopCN = phiCNCS 
+        
+
     # plot outuput values
     
-    plot_MassVariance (interval, \
-                       [MExact, MFTBS, MCTCS,  MLAX] ,\
-                       [VExact, VFTBS, VCTCS,  VLAX] , \
-                       ['k','blue', 'orange', 'm'],\
-                       ['Exact', 'FTBS', 'CTCS', 'LAX'],\
+    plot_MassVariance ( np.arange(1,tsteps+1), M0 , V0,  \
+                       [ MFTBS, MCTCS,  MLAX , MCNCS] ,\
+                       [ VFTBS, VCTCS,  VLAX, VCNCS] , \
+                       [ 'blue', 'orange', 'red' , 'm'],\
+                       [ 'FTBS', 'CTCS', 'LAX', 'CNCS' ],\
                        'MassConservation.pdf', 'VarianceConservation.pdf')
-    
-    phiE60 = Analytical_Periodic (phi0 , c, 60 , Gridx)
-    phiE80 = Analytical_Periodic (phi0 , c, 80 , Gridx)
-    
-    phiE100 = Analytical_Periodic (phi0 , c, 100 , Gridx)
-    
-    plt.plot(Gridx.x, phiE60, label='t=60' )
-    plt.plot(Gridx.x, phiE80, label='t=80' )
-    plt.plot(Gridx.x, phiE100, label='t=100' )
-
-    
-    
-    
-    
-    
-
 
 main()
     

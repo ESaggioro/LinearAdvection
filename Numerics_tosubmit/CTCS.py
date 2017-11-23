@@ -8,7 +8,7 @@ Created on Tue Oct 24 09:59:47 2017
 
 import numpy as np
 exec(open("./FTBS.py").read())
-exec(open("./FTFS.py").read())
+
 
 # CTCS scheme fro linear advection with periodic boundaries 
 # Accuracy : 2 - 2

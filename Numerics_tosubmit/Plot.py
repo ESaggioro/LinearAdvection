@@ -11,6 +11,7 @@ Created on Thu Nov  9 11:25:42 2017
 
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 # use exec because in this way python re-reads the file every time
@@ -49,12 +50,13 @@ def plot_Final (gridx, phis, labels, outFile , show = 0, title = '' ):
     plt.show()
     
     
-def plot_error (dx, errors, labels, colors,  outFile , show = 0, title = '', xlabel='' ):
-    "Plot a list of errors for different numerical schemes on the same graph,"
+def plot_error (logdx, logerrors, labels, colors,  outFile , show = 0,\
+                title = '', xlabel='' , linestyles=[] ):
+    "Plot a list of logerrors for different numerical schemes on the same graph,"
     "all with different labels, colors and with double log scales"
     "and write the result to outFile. The list of errors is in the list "
     "of arrays, errors, and the list of labels is in the string list, labels."
-    "All solutions are plotted against dx**2"
+    "All errors are plotted agoins logdx"
     # plot options (large fonts)
     font = {'size'   : 14}
     plt.rc('font', **font)
@@ -65,14 +67,15 @@ def plot_error (dx, errors, labels, colors,  outFile , show = 0, title = '', xla
     plt.ion()
 
     # plot each of the errors with the corresponding legend
-    for ip in range(len(errors)):
-        plt.plot(dx, errors[ip], color = colors[ip], linewidth=0.3  , marker = 's', \
+    for ip in range(len(logerrors)):
+        plt.plot(logdx, logerrors[ip], color = colors[ip], \
+                 linestyle=linestyles[ip], linewidth=0.8  ,  \
                  fillstyle = 'none', label=labels[ip])
 
     # further plot decorations
-    plt.legend(loc='best')
+    plt.legend(loc='best', ncol=2)
     plt.yticks(fontsize = 10)
-    plt.xticks(dx, ['' for i in dx], fontsize = 10)
+    plt.xticks(logdx, ['' for i in logdx], fontsize = 10)
     plt.tick_params(
     axis='x',          # changes apply to the x-axis
     which='minor',      # both major and minor ticks are affected
@@ -82,12 +85,12 @@ def plot_error (dx, errors, labels, colors,  outFile , show = 0, title = '', xla
     labelbottom='off') # labels along the bottom edge are off
     
     plt.xlabel( xlabel , fontsize = 12 )
-    plt.ylabel('$l_2$' , fontsize = 12 ,rotation=0)
+    plt.ylabel('$error$' , fontsize = 12 ,rotation=90, labelpad=10)
     plt.title( title , fontsize = 14)
     
     # set log scales
-    plt.yscale('log')
-    plt.xscale('log') 
+    #plt.yscale('log')
+    #plt.xscale('log') 
     
     # save plot to the outFile
     plt.savefig(outFile, bbox_inches='tight')
@@ -96,14 +99,14 @@ def plot_error (dx, errors, labels, colors,  outFile , show = 0, title = '', xla
     # close plot
     plt.close()
     
-def plot_MassVariance (times, Mass , Variance , colors, labels, \
-                       outFileMass, outFileVar, xlabel='$t_{steps} n\, $' ):
-    "Plot a list of lists of Masses(and Variancees) against time for different "
+def plot_MassVariance (times, M0, V0 , Mass , Variance , colors, labels, \
+                       outFileMass, outFileVar, xlabel='$t_{steps} \, $' ):
+    "Plot a list of lists of Masses(and Variances) against time for different "
     "numerical schemes. One graph for Mass and one for Variance."
     "All with different labels and colors and write the result to outFile. "
     "The list of times in times, list( schemes) of list(times) of masses is in "
     "Mass, same for Variance. "
-    "All solutions are plotted against dx**2"
+    
     
     # plot options 
     font = {'size'   : 12}
@@ -118,22 +121,25 @@ def plot_MassVariance (times, Mass , Variance , colors, labels, \
     minim_y=[]
     maxi_y= []
     # plot each of the Mass_Scheme(t) with the corresponding legend
+    
+    plt.plot( times , M0*np.ones(len(times)) , color = 'black' , linestyle = '-.', \
+             linewidth=0.3, label = 'Exact' )
     for i,M_scheme in enumerate(Mass):
-        plt.plot(times, M_scheme ,color = colors[i] ,linewidth=0.3 ,marker = 's', \
-                 fillstyle = 'none', label=labels[i])
+        plt.plot(times, M_scheme ,color = colors[i] ,linewidth=0.3, label=labels[i])
         minim_y.append(min(M_scheme))
         maxi_y.append(max(M_scheme))
         
         
     # further plot decorations
-    plt.legend(loc='best')
+    plt.legend(loc='best' , ncol = 2)
     plt.yticks(fontsize = 10)
     plt.xticks(fontsize = 10)
+    plt.ylim([min(minim_y),max(maxi_y)])
     
     #plt.ylim([min(minim_y) ,max(maxi_y)])
     
     plt.xlabel( xlabel , fontsize = 12 )
-    plt.ylabel('$M^{(n)}$' , fontsize = 12 ,rotation=0)
+    plt.ylabel('$M$' , fontsize = 12 ,rotation=0 ,labelpad=10)
     plt.title( 'Mass conservation' , fontsize = 14)
     
     # save plot to the outFile
@@ -150,17 +156,21 @@ def plot_MassVariance (times, Mass , Variance , colors, labels, \
     plt.ion()  
     
     # plot each of the Mass_Scheme(t) with the corresponding legend
+    
+    plt.plot( times , V0*np.ones(len(times)) , color = 'black' , linestyle = '-.', \
+             linewidth=0.3, label = 'Exact' )
     for i,V_scheme in enumerate(Variance):
-        plt.plot(times, V_scheme ,color = colors[i] ,linewidth=0.3 ,marker = 's', \
-                 fillstyle = 'none', label=labels[i])
-        
+        plt.plot(times, V_scheme ,color = colors[i] ,linewidth=0.3, label=labels[i])
+    
+    
+    
     # further plot decorations
-    plt.legend(loc='best')
+    plt.legend(loc='best', ncol = 2)
     plt.yticks(fontsize = 10)
     plt.xticks(fontsize = 10)
     
     plt.xlabel( xlabel , fontsize = 12 )
-    plt.ylabel('$V^{(n)}$' , fontsize = 12 ,rotation=0)
+    plt.ylabel('$V$' , fontsize = 12 ,rotation=0)
     plt.title( 'Variance conservation' , fontsize = 14)
     
     # save plot to the outFile
