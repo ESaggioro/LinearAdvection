@@ -39,7 +39,7 @@ def plot_Final (gridx, phis, labels, colors, linestyles, outFile , title = ''):
     # close plot
     plt.close()
     
-def plot_error (logdx, logerrors, labels, colors, linestyles,  outFile ,\
+def plot_error (logdx, logerrors, labels, colors, linestyles,  outFile ,
                 title = '', xlabel='$\Delta x$'):
     "Plot a list of errors for different numerical schemes on same graph"
     "all with different labels, colors, linestyles and write the result to a"
@@ -58,7 +58,7 @@ def plot_error (logdx, logerrors, labels, colors, linestyles,  outFile ,\
                  fillstyle = 'none', label=labels[ip])
 
     # further plot decorations
-    plt.legend(bbox_to_anchor=(0,1.02,1,0.2), loc="lower left",\
+    plt.legend(bbox_to_anchor=(0,1.1,1,0.2), loc="lower left",\
                 mode="expand", borderaxespad=0, ncol=3)
     plt.yticks(fontsize = 10)
     plt.xticks(logdx, ['' for i in logdx], fontsize = 10)

@@ -1,14 +1,16 @@
+# =============================================================================
 # Advection schemes 
+# =============================================================================
 
 import numpy as np
 import scipy 
 from scipy.sparse import diags
 from scipy.sparse.linalg import spsolve
 
-SMALL = 1e-10 #is a small number to check periodicity of Initial conditions
 
 def Check_periodic_boundary(f):
-    "Check if array f has periodic boundaries"
+    "Check if array f has periodic boundaries\
+    "
     if np.abs(f[0] - f[-1])> SMALL :
         print('Careful:your initial condition does not have\
               periodic boundaries')
@@ -16,7 +18,8 @@ def Check_periodic_boundary(f):
 def FTBS ( gridx, phi0, c , nt): 
     "FTBS scheme for linear advection on initial array profile phi0" 
     "Using Courant number c, for nt time-steps, on a space grid gridx"
-    "Returns the final advected profile"
+    "Returns the final advected profile\
+    "
     
     Check_periodic_boundary(phi0) 
     
@@ -46,7 +49,8 @@ def CTCS ( gridx, phi0, c , tsteps, phiOlder=[None]):
     "CTCS scheme for linear advection on initial array profile phi0" 
     "Using Courant number c, for nt time-steps, on a space grid gridx"
     "Additional argument , *arg, can be phi(-1),  if tsteps=1"
-    "Returns the final advected profile"
+    "Returns the final advected profile\
+    "
     
     Check_periodic_boundary(phi0) 
     
@@ -66,23 +70,24 @@ def CTCS ( gridx, phi0, c , tsteps, phiOlder=[None]):
             # Loop CTCS over space (excluding end points)
             for ix in range(1,nx-1):
                 phi[ix] = phiOld2[ix] - c * ( phiOld1[ix+1] - phiOld1[ix-1] )
-                # Update values at end points
-                phi[0] = phiOld2[0] -  c * (phiOld1[1] - phiOld1[-2])
-                # Use periodic boundaries
-                phi[-1] = phi[0]
-                # Update old time value 
-                phiOld2 = np.copy(phiOld1)
-                phiOld1 = np.copy(phi)
+            # Update values at end points
+            phi[0] = phiOld2[0] -  c * (phiOld1[1] - phiOld1[-2])
+            # Use periodic boundaries
+            phi[-1] = phi[0]
+            # Update old time value 
+            phiOld2 = np.copy(phiOld1)
+            phiOld1 = np.copy(phi)
                 
-    else :# BRUTTO?? RIPETO CODICE??
+    else : # tsteps = 1
         phiOld2 = phiOlder.copy()
         phiOld1  = phi0.copy()
+        # Loop CTCS over space (excluding end points)
         for ix in range(1,nx-1):
                 phi[ix] = phiOld2[ix] - c * ( phiOld1[ix+1] - phiOld1[ix-1] )
-                # Update values at end points
-                phi[0] = phiOld2[0] -  c * (phiOld1[1] - phiOld1[-2])
-                # Use periodic boundaries
-                phi[-1] = phi[0] 
+        # Update values at end points
+        phi[0] = phiOld2[0] -  c * (phiOld1[1] - phiOld1[-2])
+        # Use periodic boundaries
+        phi[-1] = phi[0] 
             
     return(phi)
     
@@ -90,7 +95,8 @@ def CTCS ( gridx, phi0, c , tsteps, phiOlder=[None]):
 def CNCS (gridx, phi0, c ,tsteps ):
     "CNCS scheme for linear advection on initial array profile phi0" 
     "Using Courant number c, for nt time-steps, on a space grid gridx"
-    "Returns the final advected profile"
+    "Returns the final advected profile\
+    "
     
     Check_periodic_boundary(phi0) 
         
@@ -120,7 +126,8 @@ def CNCS (gridx, phi0, c ,tsteps ):
 def LaxWendroff ( gridx, phi0, c , tsteps ): 
     "Lax-wendroff scheme for linear advection on initial array profile phi0" 
     "Using Courant number c, for nt time-steps, on a space grid gridx"
-    "Returns the final advected profile"
+    "Returns the final advected profile\
+    "
     
     Check_periodic_boundary(phi0) 
     
@@ -153,7 +160,8 @@ def LaxWendroff ( gridx, phi0, c , tsteps ):
 def run_schemes( gridx, phi0, c , tsteps  ):
     "Runs all the advection schemes on initial array profile phi0, " 
     "using Courant number c, for nt time-steps, on a space grid gridx."
-    "Returns the final advected profiles."
+    "Returns the final advected profiles.\
+    "
     phiFTBS = FTBS( gridx, phi0, c , tsteps  )
     phiCTCS = CTCS( gridx, phi0, c , tsteps  )
     phiCNCS = CNCS( gridx, phi0, c , tsteps  )

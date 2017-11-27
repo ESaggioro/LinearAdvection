@@ -1,11 +1,12 @@
-# l-norm errors for the pair (phi, f), where phi is the numerical approximation
-# of a function f.   
+# =============================================================================
+# l-norm errors (l_2 and l_infinity) of phi in comparison to phiExact
+# =============================================================================
 
 import numpy as np
 
-def check_length(phi,f):
+def check_length( phi, phiExact ):
     " Checks is the array have same length"
-    if len(phi) != len(f):
+    if len(phi) != len(phiExact):
         print( " Cannot compute l2 norm for functions with different \
               number of points")
         return( False ) 
@@ -13,14 +14,14 @@ def check_length(phi,f):
         return( True)
 
             
-def l2_norm (phi , f):
+def l2_norm (phi , phiExact):
     "This function computes the l2 error norm of a numerical approx phi,"
     "given f analytical solution"
         
-    l2 = check_length(phi,f)
+    l2 = check_length( phi, phiExact)
     if l2 :
-        num =  np.sum(np.square(phi-f))
-        den = np.sum ( np.square(f ) ) 
+        num =  np.sum(np.square(phi-phiExact))
+        den = np.sum ( np.square(phiExact ) ) 
         l2 = (num / den)**0.5
     else:
         l2 = np.NaN       
@@ -28,14 +29,14 @@ def l2_norm (phi , f):
     return(l2)
         
   
-def linfty_norm (phi , f):
+def linfty_norm (phi , phiExact):
     "This function computes the l_infty error norm of a numerical approx phi,\
     given f analytical solution"
     
-    linfty = check_length(phi,f)
+    linfty = check_length( phi, phiExact)
     if linfty :
-        diff_abs = np.absolute( (phi - f) )
-        linfty = np.max( diff_abs) / np.max ( np.absolute (f) )
+        diff_abs = np.absolute( (phi - phiExact) )
+        linfty = np.max( diff_abs) / np.max ( np.absolute (phiExact) )
     else:
         linfty = np.NaN          
     

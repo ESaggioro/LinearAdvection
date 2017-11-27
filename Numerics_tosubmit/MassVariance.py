@@ -1,17 +1,21 @@
-# This function computes the Mass and Variance of a function phi
+# =============================================================================
+# This function computes the Mass and Variance of a profile phi
+# =============================================================================
 
 import numpy as np
 
 def Mass( phi , dx ):
     "Compute the 'Mass' of a function phi (with periodic-boundary) on a grid"
-    "with homogeneous space discretization dx."
+    "with homogeneous space discretization dx.\
+    "
     M = dx * sum(phi[1:])
     
     return( M )
     
 def Variance( phi , dx ):
     " Compute the Variance of a function phi (with periodic-boundary) on a grid"
-    "with homogeneous space discretization dx." 
+    "with homogeneous space discretization dx.\
+    " 
     V = dx * sum(np.square(phi[1:]))
     
     return( V )
@@ -20,7 +24,8 @@ def Variance( phi , dx ):
 def MassVarianceInTime(  grid, phi0, tsteps, c ):
     " Mass and Variance at every time step , for all advection schemes "
     " Given the space grid, grid, the initial condiotion , phi0 array, and the"
-    " number of timesteps, tsteps."
+    " number of timesteps, tsteps.\
+    "
     
     # Initialize to 0 the array for M and V ,for every scheme
     MFTBS, VFTBS    = np.zeros(tsteps), np.zeros(tsteps)
@@ -38,7 +43,7 @@ def MassVarianceInTime(  grid, phi0, tsteps, c ):
     for t in range(2, tsteps+1): # M and V in time
         
         phiFTBS = FTBS (grid, philoopF, c , 1 ) # FTBS scheme
-        phiCTCS = CTCS (grid, philoopCT, c , 1 , philoopCT_Older )  # CTCS scheme
+        phiCTCS = CTCS (grid, philoopCT, c , 1 , philoopCT_Older )# CTCS scheme
         phiLAX = LaxWendroff (grid, philoopLA , c , 1 ) # LaxWendroff scheme
         phiCNCS = CNCS (grid, philoopCN, c , 1 )  # CTCS sceheme
          

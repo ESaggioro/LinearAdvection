@@ -27,7 +27,7 @@ exec(open("./UPWIND.py").read())
 exec(open("./CNCS.py").read())
 exec(open("./LaxWendroff.py").read())
 
-exec(open("./L_norm_errors.py").read())
+exec(open("./Errors.py").read())
 
 
 
@@ -103,8 +103,8 @@ def main():
     # And compute error - norm
     for i,grid in enumerate(gridx): # run over different grid resolution
         print('Number of time steps=', Nt[i])
-        phi0_s[i] , phiExact_s[i] = \
-        Analytical( cosBell , grid , c , Nt[i] ,L )
+        phi0_s[i] = cosBell(grid.x, L)
+        phiExact_s[i] = Analytical( cosBell , grid , c , Nt[i] ,L )
         
         Function_CTCS[i]  = CTCS ( grid, phi0_s[i] , c , Nt[i] )
         Function_FTBS[i]  = FTBS ( grid, phi0_s[i] , c , Nt[i] )
@@ -149,10 +149,9 @@ def main():
     logdx1, logdx2  ] , \
     ["FTBS ", "CTCS", "CNCS", "LAX", "$\Delta x$", "${\Delta x}^2$"],\
     ['blue' , 'orange', 'magenta', 'red', 'black', 'green'] ,\
-                myoutfile, \
+    ['-','-','-','-',':','--'], myoutfile, \
                 title='$l_{2}$-norm errors : cosbell and c=%g'%c, \
-                xlabel='$\Delta x$', \
-                linestyles=['-','-','-','-',':','--'])
+                xlabel='$\Delta x$')
     
     
     
