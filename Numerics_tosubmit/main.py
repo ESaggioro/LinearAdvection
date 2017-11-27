@@ -1,12 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Nov  8 16:09:46 2017
-
-@author: es3017
-"""
 ## This function is the main that I use to solve and analyse 
-# the linear advection problem
+## the linear advection problem
 
 import numpy as np
 import matplotlib as plt
@@ -22,9 +15,7 @@ exec(open("./UPWIND.py").read())
 
 def main():
     
-    ## Declare an instance of the Grid class, called grid which    ###
-    ## defines the grid for these simulations. 
-    ##Thus grid.dx and grid.x will automatically be defined
+    # Set up the grid
     gridx = Grid( 100 , 1.0 )
     x = gridx.x
     

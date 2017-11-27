@@ -1,43 +1,22 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Nov  8 16:41:17 2017
+# Function to compute the analytical solution of linear advection,
+# given an initial condition. 
 
-@author: es3017
-"""
 
-## This function computes the analytical solution for the linear advection eq,
-## given an initial condition. 
-
-import numpy as np
-import matplotlib.pylab as plt
-
-# use exec because in this way python re-reads the file every time
+# read the files defining initial conditions 
 exec(open("./InitialConditions.py").read())
-exec(open("./grid.py").read()) 
 
+def Analytical ( InCond_type , grid , c, tsteps , *args):
 
-SMALL = 1e-10 #is a small number to check periodicity of Initial conditions
-
-def Analytical ( InitialConditions_type , grid , c, tsteps , *args):
-
-    " Analytical solution to linear advection in 1d given the initial profile "
-    # Inputs are :
-    # InitialConditions_type = a string teling the initial function type,
-    # chosen from InitialConditions.py
-    # grid = is the grid object defined for the 1d space dimension
-    # c= the courant number, 
-    # tsteps = number of time step ,  
-    # Extra args needed when calling squarewave or sine
-    
-    # Initialise dependent variable ( accounting for phiOld args)
-    phiOld = InitialConditions_type(grid.x , *args)
+    " Analytical solution of linear advection eqaution in 1d, given "
+    " the string telling the initial profile type InCond_type (chosen from "
+    " InitialConditions.py), the grid-object grid (defined as in grid.py ), "
+    " the Courant number c and the number of time steps tsteps. "
+    " Extra args depends on the choice of the initial profile type. "
     
     # Exact solution is the initial condition shifted around the domain
-    phiExact = InitialConditions_type((grid.x - c*tsteps*grid.dx)%grid.length  ,\
+    phiExact = InCond_type((grid.x - c*tsteps*grid.dx)%grid.length,\
                                       *args)
     
-    
-    return( phiOld , phiExact )
+    return( phiExact )
     
 

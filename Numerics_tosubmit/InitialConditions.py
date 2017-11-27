@@ -31,17 +31,18 @@ def squareWave(x,alpha,beta):
     phi = np.zeros_like(x)
     
     # The grid spacing (assumed uniform)
-    dx = x[1] - x[0]
+    #dx = x[1] - x[0]
     
     # Set phi away from the end points (assume zero at the end points)
-    for j in range(len(x)):
+    #for j in range(len(x)):
         # edges of the grid box (using west and east notation)
-        xw = x[j] - 0.5*dx
-        xe = x[j] + 0.5*dx
+        #xw = x[j] - 0.5*dx
+        #xe = x[j] + 0.5*dx
         
         #integral quantity of phi
-        phi[j] = max((min(beta, xe) - max(alpha, xw))/dx, 0)
-        
+        #phi[j] = max((min(beta, xe) - max(alpha, xw))/dx, 0)
+    
+    phi = np.where(x>=alpha, 1, 0) - np.where(x>beta , 1, 0)   
     return (phi)
         
 def sine (x, k, A):

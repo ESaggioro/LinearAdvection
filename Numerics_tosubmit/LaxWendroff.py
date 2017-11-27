@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Nov 17 18:53:25 2017
-
-@author: es3017
-"""
-
 # This function is the implemetation of the Lax Wendroff finite-volume method
 # to solve linear advection in 1-d
 

@@ -52,7 +52,7 @@ def main():
     VLAX = np.zeros(tsteps)
     VCNCS = np.zeros(tsteps)
     
-    # Cosbell function evolved with 3 schemes and Exact solution
+    # Cosbell function 
     phi0 = cosBell ( Gridx.x , L) # initial condition
     M0 = Mass (phi0 , Gridx.dx) # initial Mass
     V0 = Variance (phi0 , Gridx.dx) # initial Variance

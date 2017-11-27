@@ -4,6 +4,7 @@
 
 import scipy as spy
 import numpy as np
+from scipy.sparse import diags
 from scipy.sparse.linalg import spsolve
 
 
