@@ -61,7 +61,7 @@ def MassVarianceInTime(  grid, phi0, tsteps, c ):
         
         # Update
         philoopF = phiFTBS
-        philoopCT_Older= philoopCT
+        philoopCT_Older = philoopCT
         philoopCT = phiCTCS
         philoopLA = phiLAX 
         philoopCN = phiCNCS 

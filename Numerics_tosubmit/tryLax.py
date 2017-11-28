@@ -14,14 +14,14 @@ import matplotlib as plt
 
 exec(open("./InitialConditions.py").read())
 exec(open("./grid.py").read()) 
-exec(open("./Analytical_Slicing.py").read())
+exec(open("./Analytical.py").read())
 exec(open("./Plot.py").read()) 
 exec(open("./LaxWendroff.py").read()) 
 exec(open("./CTCS.py").read()) 
 
 
 
-exec(open("./L_norm_errors.py").read())
+exec(open("./Errors.py").read())
 
 def main():
     
@@ -29,7 +29,7 @@ def main():
     ## defines the grid for these simulations. 
     ##Thus grid.dx and grid.x will automatically be defined
     L = 1.0
-    Nx =  320
+    Nx =  100
     gridx = Grid( Nx , L ) 
     x = gridx.x 
     dx = gridx.dx 
@@ -50,8 +50,7 @@ def main():
     
     # Cosbell wave and analytical solutions 
     phi0 = cosBell(x,L)
-    phiExact = Analytical_Periodic(phi0 , c, Nt , gridx) 
-    
+    phiExact = Analytical(cosBell , gridx, c, Nt, L ) 
     
     # Lax Weendroff scheme for advection
     phi_Lax = LaxWendroff ( gridx, phi0, c , Nt )
@@ -79,7 +78,7 @@ def main():
     
     #  Sqaure wave and analytical solutions for various dx-resolutions
     phi0_Q = squareWave(x,0.4,0.7)
-    phiExact_Q = Analytical_Periodic(phi0_Q , c, Nt , gridx) 
+    phiExact_Q = Analytical(squareWave, gridx, c, Nt ,  0.4,0.7) 
     
     
     # Lax Weendroff scheme for advection
@@ -102,6 +101,9 @@ def main():
     #plt.plot(x, phi_CTCS_Q ,color='orange', linestyle='-', label = 'CTCS')
     plt.legend()
     plt.show()
+    
+    
+    
     
     
 main()

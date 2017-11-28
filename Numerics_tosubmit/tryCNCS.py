@@ -17,7 +17,7 @@ exec(open("./grid.py").read())
 exec(open("./CNCS.py").read())
 exec(open("./Analytical.py").read())
 exec(open("./Plot.py").read()) 
-exec(open("./L_norm_errors.py").read())
+exec(open("./Errors.py").read())
 
 def main():
     
@@ -30,13 +30,13 @@ def main():
     dx = gridx.dx 
     
     # Define the time paramenter and Courant number
-    tsteps = 100
-    c = 0.3 
+    tsteps = 150
+    c = 0.5 
     print('The Courant number chosen is c = ' , c)
     
     # Cosbell wave and analytical solutions 
-    
-    phi0, phi_Exact = Analytical( cosBell ,gridx, c, tsteps , L) 
+    phi0 = cosBell(x,L)
+    phi_Exact = Analytical( cosBell ,gridx, c, tsteps , L) 
     
     # CNCS scheme 
     phi_CNCS = CNCS ( gridx, phi0, c , tsteps )
@@ -51,6 +51,9 @@ def main():
     # Error of CNCS    
     er_CNCS = l2_norm (phi_CNCS , phi_Exact)
     print('log Error CNCS=', np.log10(er_CNCS))
+    
+    
+    
 
 
 main()

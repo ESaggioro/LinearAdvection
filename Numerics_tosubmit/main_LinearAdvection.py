@@ -6,9 +6,7 @@
 # space order of accuracy )
 # =============================================================================
 
-
 import numpy as np
-import matplotlib as plt
 
 # read in all the code associated with the linear advection study
 exec(open("./grid.py").read()) 
@@ -127,6 +125,7 @@ def main():
     # use Plot.py
     plot_MorV (times, M0, M_s , colors, name_s, outfile_M, 'M')
     plot_MorV (times, V0, V_s , colors, name_s, outfile_V, 'V')
+    
 
 ## =============================================================================
 ## ERRORS AND ORDER OF ACCURACY     
