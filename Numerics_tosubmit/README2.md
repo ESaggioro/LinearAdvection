@@ -1,5 +1,3 @@
-# FinalCode
-Final Code for Numerics Corse Work
 This folder contains the code for the 29th of November deadline of the Numerics assignment .
 
 main_LinearAdvection.py is the main code for the Linear Advection equation problem. The main calls all the numerical schemes and the numerical tests I have implemented. I have selected a few choices of set-up (i.e grid points, time steps, Courant number C, type of initial condition) to show how my code behaves. In the final report I will include more plots for different choice of the set-up parameters.  
