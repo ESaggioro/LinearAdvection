@@ -1,6 +1,6 @@
 # =============================================================================
 # Function to compute the analytical solution of 1-d linear advection eq,
-# given an initial condition. 
+# given an initial condition, Courant number and time steps. 
 # =============================================================================
 
 

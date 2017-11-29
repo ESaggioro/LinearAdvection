@@ -47,7 +47,7 @@ def ErrorsAgainstResolution( Nx, Lx, C, norm_type, Nt , i_c, *args):
     " This function computes the l-norm errors for all advection schemes and "
     " for different grid meshes, given a fix Courant number C. "
     " The meshes are defined via the number of points in the grid in list of "
-    " integers, Nx; grid length L; the Courant number, C; the type of norm"
+    " integers, Nx; grid length is Lx; the Courant number, C; the type of norm"
     " is the string, norm_type; the initial condition type (and extra args) "
     "is string i_c (and *args). To ensure that the physical velocity U is "
     "constant, provide the tsteps Nt such that the ratio with the "

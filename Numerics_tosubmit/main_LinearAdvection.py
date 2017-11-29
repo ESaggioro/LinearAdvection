@@ -42,7 +42,7 @@ def main():
 ## PLOT RESULT FROM ALL SCHEMES ADVECTION     
 ## =============================================================================
     print( '\n-------ADVECTION OF INITIAL PROFILE-------\n ' )
-    # Set up: 
+    # Set up 1: 
     # Nx=20 coarse, Nt=40 short time , C=0.3 small Courant number. 
     # Two initial conditions: cos-bell (smooth) and square wave (non-smooth) 
     
@@ -68,9 +68,8 @@ def main():
     outfile = 'Bell_c0'+str(c)[-1]+'_Nt'+str(nt)+'_Nx'+str(Nx[0])+'.pdf'
     # use Plot.py
     plot_Final(Gridx[i_x], schemes, labels, colors,linestyles, outfile ) 
-    
-#%%    
-    # Set up: 
+        
+    # Set up 2: 
     # Nx=100 fine, Nt=100 long time , C=0.3 small Courant number. 
     # Two initial conditions: cos-bell (smooth) and square wave (non-smooth) 
     
@@ -93,17 +92,16 @@ def main():
     # use Plot.py
     plot_Final(Gridx[i_x], schemes2, labels, colors, linestyles, outfile2 ) 
  
- 
-#%%     
+     
 # =============================================================================
 # MASS AND VARIANCE CONSERVATIONS     
 # =============================================================================
     print( '\n-------MASS AND VARIANCE IN TIME-------\n ' )
     # Set up: 
-    # Nx=100 fine, Nt=100 long time , C=0.6 Courant number. 
+    # Nx=100 fine, Nt=150 long time , C=0.6 Courant number. 
     # Initial conditions: cos-bell (smooth)  
     i_x = 2
-    nt = Nt[3]
+    nt = Nt[4]
     c = C[1] 
     print( '-------nx=%g , nt=%g, C=%g -------\n' %(Nx[i_x],nt, c))
     print( '-------Initial condition: cosBell function-------' )
@@ -176,4 +174,3 @@ def main():
     
 main()
 
-#%% 

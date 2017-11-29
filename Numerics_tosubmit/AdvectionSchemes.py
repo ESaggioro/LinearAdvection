@@ -1,5 +1,6 @@
 # =============================================================================
-# Advection schemes 
+# Numerical schemes to solve the linear advection equation : 
+# FTBS, CTCS, CNCS and Lax-Wendroff
 # =============================================================================
 
 import numpy as np
@@ -48,7 +49,7 @@ def FTBS ( gridx, phi0, c , nt):
 def CTCS ( gridx, phi0, c , tsteps, phiOlder=[None]): 
     "CTCS scheme for linear advection on initial array profile phi0" 
     "Using Courant number c, for nt time-steps, on a space grid gridx"
-    "Additional argument , *arg, can be phi(-1),  if tsteps=1"
+    "Additional argument , phiOlder, to provide  if tsteps=1. "
     "Returns the final advected profile\
     "
     
@@ -102,7 +103,8 @@ def CNCS (gridx, phi0, c ,tsteps ):
         
     # The vector used to store phi in CNCS does not include last element 
     N = gridx.nx - 1     # dimension of vector for CNCS 
-    v = phi0[:N]         # initial condition 
+    v = phi0.copy()
+    v = v[:N]            # initial condition 
     
     # Built the matrices Q and M s.t. M*v^{n+1}=Q*v^n  
     diagonals = [ np.ones(N), \

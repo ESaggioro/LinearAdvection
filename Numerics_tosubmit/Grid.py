@@ -1,5 +1,5 @@
 # =============================================================================
-# A class called Grid to define how to partition the 1-d length
+# A class called Grid to define the partition of the 1-d space domain.
 # =============================================================================
 
 import numpy as np

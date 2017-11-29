@@ -101,8 +101,6 @@ def plot_MorV (times, M0, Mass , colors, labels, outFileMass, ylabel):
              linestyle = '-.', \
              linewidth=0.9, label = 'Exact' )
     
-        
-        
     # further plot decorations
     plot_decoration( '$t_{steps} $' , ylabel, 0, '')
     if ylabel == 'M':
