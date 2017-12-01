@@ -114,7 +114,7 @@ def main():
     M_s,V_s,name_s = MassVarianceInTime (Gridx[i_x], cosB_0 , nt , c )
       
     # plot M and V in time, for all schemes
-    times = np.arange(1,Nt[3])
+    times = np.arange(1,nt)
     colors = [ 'blue', 'orange', 'm' , 'red']
     outfile_M = 'Mass_c0'+str(c)[-1]+'_Nt'+str(nt)+'_Nx'+str(Nx[0])+\
     '_cosbell.pdf'
