@@ -125,7 +125,7 @@ def CNCS (gridx, phi0, c ,tsteps ):
     
     return(phi)
         
-def LaxWendroff ( gridx, phi0, c , tsteps ): 
+def LaxWendroff ( gridx, phi0, c , nt ): 
     "Lax-wendroff scheme for linear advection on initial array profile phi0" 
     "Using Courant number c, for nt time-steps, on a space grid gridx"
     "Returns the final advected profile\
@@ -140,21 +140,24 @@ def LaxWendroff ( gridx, phi0, c , tsteps ):
     # Create phiOld and initialize it to phi0
     phiOld = np.copy(phi0)
     
+    c = np.float(c)
+    
     # Loop over time steps
-    for it in range(tsteps):
+    for it in range(nt):
         # Loop over space (excluding end points)
         for ix in range(1,nx-1):
-            phi[ix] = phiOld[ix]*(1-c**2) + \
-                      phiOld[ix+1]*0.5*c*(c-1)+\
-                      phiOld[ix-1]*0.5*c*(c+1)
+            #phi[ix] = phiOld[ix]*(1-c*c) + phiOld[ix+1]*0.5*c*(c-1)+ \
+            #phiOld[ix-1]*0.5*c*(c+1)
+            phi[ix] = phiOld[ix] - 0.5*c* (phiOld[ix+1]-phiOld[ix-1])\
+                    + 0.5*c*c*(phiOld[ix+1]-2*phiOld[ix]+phiOld[ix-1])
         # Update values at end points    
-        phi[0] =  phiOld[0]*(1-c**2) + \
+        phi[0] =  phiOld[0]*(1-c*c) + \
                       phiOld[+1]*0.5*c*(c-1)+\
                       phiOld[-2]*0.5*c*(c+1)
         # Use periodic boundaries 
         phi[-1] = phi[0]
         # Update old time value 
-        phiOld = np.copy(phi)
+        phiOld = phi.copy()
         
     return(phi)
     
