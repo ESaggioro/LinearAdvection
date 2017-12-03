@@ -5,7 +5,7 @@
 
 import numpy as np
 import scipy 
-from scipy.sparse import diags
+from scipy.sparse import diags , spdiags
 from scipy.sparse.linalg import spsolve
 
 
@@ -102,28 +102,35 @@ def CNCS (gridx, phi0, c ,tsteps ):
     Check_periodic_boundary(phi0) 
         
     # The vector used to store phi in CNCS does not include last element 
-    N = gridx.nx - 1     # dimension of vector for CNCS 
-    v = phi0.copy()
-    v = v[:N]            # initial condition 
+    N = int(gridx.nx - 1)     # dimension of vector for CNCS 
+    phi = phi0.copy()
+    v = np.array(phi[:N])            # initial condition 
     
-    # Built the matrices Q and M s.t. M*v^{n+1}=Q*v^n  
-    diagonals = [ np.ones(N), \
-                  0.25*c*np.ones(N-1),\
-                 -0.25*c*np.ones(N-1),\
-                  0.25*c*np.ones(1),\
-                 -0.25*c*np.ones(1)]
     
-    Q = diags(diagonals, [0, -1,+1,+(N-1),-(N-1)], format='csr')
-    M = diags(diagonals, [0, 1,-1,-(N-1),+(N-1)],  format='csr')
+    # Built the matrices Q and M s.t. M*v^{n+1}=Q*v^n 
+    #diagonals = [ np.ones(N), \
+                 # 0.25*c*np.ones(N-1, dtype=float),\
+                 #-0.25*c*np.ones(N-1, dtype=float),\
+                 #+0.25*c,-0.25*c]
     
+    diagonals = [-0.25*c, +0.25*c*np.ones(N-1), np.ones(N), \
+                 -0.25*c*np.ones(N-1), +0.25*c ]
+    Q = diags(diagonals, [-N+1, -1,0, +1,+N-1], format='csr' )
+   
+    
+    M = diags(diagonals, [+N-1, +1,0, -1,-N+1], format='csr' )
+    
+
     # x := v^{n+1} is calculated solving M*x = b := Q*v^n
     for t in range(tsteps):
-        v = spsolve(M, Q * v)
+        b = Q.dot(v)
+        v = spsolve(M, b )
         
     # Recover the periodic solution phi   
-    phi = np.append(v, v[0]) 
+    phi = np.append(v,v[0])
     
     return(phi)
+    
         
 def LaxWendroff ( gridx, phi0, c , nt ): 
     "Lax-wendroff scheme for linear advection on initial array profile phi0" 
@@ -151,9 +158,8 @@ def LaxWendroff ( gridx, phi0, c , nt ):
             phi[ix] = phiOld[ix] - 0.5*c* (phiOld[ix+1]-phiOld[ix-1])\
                     + 0.5*c*c*(phiOld[ix+1]-2*phiOld[ix]+phiOld[ix-1])
         # Update values at end points    
-        phi[0] =  phiOld[0]*(1-c*c) + \
-                      phiOld[+1]*0.5*c*(c-1)+\
-                      phiOld[-2]*0.5*c*(c+1)
+        phi[0] =  phiOld[0] - 0.5*c* (phiOld[+1]-phiOld[-2])\
+                    + 0.5*c*c*(phiOld[+1]-2*phiOld[0]+phiOld[-2])
         # Use periodic boundaries 
         phi[-1] = phi[0]
         # Update old time value 
