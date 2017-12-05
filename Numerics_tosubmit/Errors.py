@@ -49,9 +49,9 @@ def ErrorsAgainstResolution( Nx, Lx, C, norm_type, Nt , i_c, *args):
     " The meshes are defined via the number of points in the grid in list of "
     " integers, Nx; grid length is Lx; the Courant number, C; the type of norm"
     " is the string, norm_type; the initial condition type (and extra args) "
-    "is string i_c (and *args). To ensure that the physical velocity U is "
-    "constant, provide the tsteps Nt such that the ratio with the "
-    "correspondant Nx is fix. "
+    " is string i_c (and *args). To ensure that the physical velocity U is "
+    " constant, provide the tsteps Nt such that the ratio with the "
+    " correspondant Nx is fix. "
     " Returns a list of arrays of Log10(errors) and a likewise ordered list "
     " of scheme names.\
     "  

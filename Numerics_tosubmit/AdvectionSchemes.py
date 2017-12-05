@@ -106,18 +106,12 @@ def CNCS (gridx, phi0, c ,tsteps ):
     phi = phi0.copy()
     v = np.array(phi[:N])            # initial condition 
     
-    
     # Built the matrices Q and M s.t. M*v^{n+1}=Q*v^n 
-    #diagonals = [ np.ones(N), \
-                 # 0.25*c*np.ones(N-1, dtype=float),\
-                 #-0.25*c*np.ones(N-1, dtype=float),\
-                 #+0.25*c,-0.25*c]
-    
     diagonals = [-0.25*c, +0.25*c*np.ones(N-1), np.ones(N), \
                  -0.25*c*np.ones(N-1), +0.25*c ]
+    
     Q = diags(diagonals, [-N+1, -1,0, +1,+N-1], format='csr' )
    
-    
     M = diags(diagonals, [+N-1, +1,0, -1,-N+1], format='csr' )
     
 
@@ -153,8 +147,7 @@ def LaxWendroff ( gridx, phi0, c , nt ):
     for it in range(nt):
         # Loop over space (excluding end points)
         for ix in range(1,nx-1):
-            #phi[ix] = phiOld[ix]*(1-c*c) + phiOld[ix+1]*0.5*c*(c-1)+ \
-            #phiOld[ix-1]*0.5*c*(c+1)
+            
             phi[ix] = phiOld[ix] - 0.5*c* (phiOld[ix+1]-phiOld[ix-1])\
                     + 0.5*c*c*(phiOld[ix+1]-2*phiOld[ix]+phiOld[ix-1])
         # Update values at end points    
