@@ -1,0 +1,19 @@
+Excellent work. Terrific results. This report is packed full in insight and evidence of deep learning. 
+
+25/25
+
+My only criticism is that your report is clearly written by someone who is not a native English speaker. Your writing is clear and unambiguous but not perfect and you could in places be more concise. You will need to work on this for writing your dissertation. 
+
+You should say "solve a matrix equation" rather than "perform a matrix equation". 
+
+CTCS is three time-level. The others are two time-level.
+
+Good summary of expected properties in table 2.1.
+
+Section 2.2 is very well written.
+
+Equation 3.1 is not formatted in a standard mathematical way.
+
+Figure 3.1 is excellent - very clear.
+
+

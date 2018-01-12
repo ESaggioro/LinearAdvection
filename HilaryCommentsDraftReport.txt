@@ -1,0 +1,33 @@
+Good structure to your report. Excellent start. Your plans look very ambitious. You don't need to present everything that you describe in section 4. I think that this will take you too long.
+
+Your sentences are often long and complicated. Try to simplify them. For example the sentence:
+"Euler eq.s are solved for the atmosphere in terms of the atmosphere in terms of wind velocities, the potential temperature and the air density"
+needs re-writing.
+
+The objective of the work is not just to solve the advection equation, it is to find a scheme which performs well and demonstrate that your implementation has the desirable properties that you chose it for. 
+
+Section 2 on the linear advection equation does not need to be so long. 
+
+For FTBS and CTCS, all we need is dx>0 and dt>0. We do not need them to be <<1. 
+
+In section 3.1.1 you say:
+"Both schemes are explicit, therefore they do not require complex computations".
+There are plenty of explicit schemes that are complex. However they don't require the solution of a matrix equation which can be expensive.
+
+I would say:
+"The linear advection equation with periodic boundary conditions" 
+rather than "provided periodic boundary conditions".
+
+Define u_num. I think that you mean u_num<u rather than u_num<0.
+
+CTCS has a computational mode rather than a "numerical mode".
+
+In your section 4.2, are you proposing to find u_num of your numerical solutions? This will be difficult (it would require a Fourier decomposition of your solutions). Or are you proposing to present the dispersion relation. In this assignment you are supposed to be demonstrating properties of your numerical implementations rather than results of numerical analysis so no need to plot a dispersion relation. Instead, refer to a dispersion relation plotted elsewhere if you can find one. In order to assess numerical dispersion you can look at oscillations generated near step changes in resolution. It is very difficult to see the effects of the computational mode in CTCS.
+
+Put all schemes onto each graph so that you can compare them more readily and save space.
+
+Put a lines onto fig 5.3 parallel to dx and dx^2 so that you can clearly see the order of convergence of CTCS and FTBS.
+
+There must be a bug in your CTCS implementation as it is only 1st order accurate. I have looked at the most recent commit of your code. I think that the problem is in your treatment of space and the periodic boundary conditions. If you assume that the x points go from xmin to xmax in nx points then you will have dx=(xmax-xmin)/(nx-1). Ask for more help on the discussion cite if you cannot find the problem with CTCS. The FTBS results look fine. 0.9 is close enough.
+
+

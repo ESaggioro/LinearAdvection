@@ -1,0 +1,28 @@
+Total for Code 12/15
+
+Excellent README files
+
+Your .gitignore file should include pyc files
+
+Good responses to feedback - 5/5
+
+Well designed, clear, well commtend code - 7/10
+
+I cannot run your code because main_LinearAdvection.py contains the line:
+exec(open("./Grid.py").read()) 
+whereas your file is called Grid.py
+I am using a case sensitive operating system. I fixed this but then the code gave another error running
+python3 main_LinearAdvection.py 
+
+Traceback (most recent call last):
+  File "main_LinearAdvection.py", line 175, in <module>
+    main()
+  File "main_LinearAdvection.py", line 124, in main
+    plot_MorV (times, M0, M_s , colors, name_s, outfile_M, 'M')
+...
+ValueError: x and y must have same first dimension
+
+Your design of the time-stepping in CTCS is not good. You shouldn't have a whole other loop for the case tsteps = 1. If you only run for one time-step, this should be handled by FTBS (as is the first time-step if tsteps>1). 
+
+If tsteps = 0, CTCS returns the wrong result.
+
